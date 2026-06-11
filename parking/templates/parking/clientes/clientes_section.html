@@ -1,0 +1,99 @@
+{% extends 'parking/base.html' %}
+
+{% block title %}{{ section_title }} | Gestión de Clientes {% endblock %}
+
+{% block page_title %}
+Gestión de Clientes 
+{% endblock %}
+
+{% block subnav %}
+<a href="#" class="subnav-link active">
+    {{ section_title }}
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+    <div class="col-12 col-lg-4">
+        <div class="card stat-card mb-3">
+            <div class="card-body">
+                <p class="text-uppercase small text-muted mb-1">
+                    {{ section_group }}
+                </p>
+                <h5 class="mb-2">
+                    {{ section_title }}
+                </h5>
+                <p class="text-muted mb-3">
+                    {{ section_description }}
+                </p>
+                <p class="small text-secondary mb-0">
+                    <i class="bi bi-lightbulb"></i>
+                    <em>Más adelante aquí agregaremos KPIs, gráficos y atajos rápidos.</em>
+                </p>
+            </div>
+        </div>
+        <!-- Tarjeta pequeña con metadatos / código interno -->
+        <div class="card stat-card">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="small text-muted">Código de vista</div>
+                    <div class="fw-semibold">
+                        {{ section_code|default:"CLIENTES" }}
+                    </div>
+                </div>
+                <i class="bi bi-people-fill fs-3 text-muted"></i>
+            </div>
+        </div>
+    </div>
+    <!-- Columna derecha: acciones + tabla (placeholder) -->
+    <div class="col-12 col-lg-8">
+        <div class="card mb-3" style="border-radius: 16px; border: none; box-shadow: 0 12px 30px rgba(15,23,42,0.05);">
+            <div class="card-header d-flex justify-content-between align-items-center bg-white"
+                 style="border-bottom: 1px solid #e5e7eb; border-radius: 16px 16px 0 0;">
+                <div>
+                    <h6 class="mb-0">{{ section_title }}</h6>
+                    <small class="text-muted">
+                        Aquí se mostrará el contenido principal de esta sección
+                        (formularios, tablas, filtros, etc.).
+                    </small>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-funnel"></i> Filtros
+                    </button>
+                    <button class="btn btn-sm btn-primary">
+                        <i class="bi bi-plus-circle"></i> Nuevo registro
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">
+                    Por ahora esta es una vista temporal. Luego aquí agregaremos:
+                </p>
+                <ul class="small text-muted mb-0">
+                    <li>Una tabla con los clientes filtrables y ordenables.</li>
+                    <li>Botones de acción rápida (ver detalle, editar, desactivar).</li>
+                    <li>Buscador por nombre, documento, placa, empresa, etc.</li>
+                </ul>
+            </div>
+        </div>
+        <!-- Segunda tarjeta opcional: notas o próximos pasos -->
+        <div class="card" style="border-radius: 16px; border: none; box-shadow: 0 12px 30px rgba(15,23,42,0.04);">
+            <div class="card-body">
+                <h6 class="mb-2">
+                    Próximos pasos del módulo
+                </h6>
+                <p class="small text-muted mb-2">
+                    Cuando definamos el modelo de datos de clientes, esta sección se conectará
+                    con la base de datos para que el POS realmente gestione la información.
+                </p>
+                <ol class="small text-muted mb-0">
+                    <li>Crear los modelos de clientes y vehículos.</li>
+                    <li>Hacer formularios amigables para registro y edición.</li>
+                    <li>Agregar tablas con paginación, filtros y buscador.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

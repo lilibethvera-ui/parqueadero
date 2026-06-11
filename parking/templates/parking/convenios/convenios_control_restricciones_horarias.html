@@ -1,0 +1,295 @@
+{% extends "parking/base.html" %}
+
+{% block title %}Gestión de Convenios · Restricciones horarias{% endblock %}
+
+{% block page_title %}
+Gestión de Convenios · Control de Acceso
+{% endblock %}
+
+{% block content %}
+<div class="card" style="border-radius: 16px; border: none; box-shadow: 0 12px 30px rgba(15,23,42,0.05);">
+    <div class="card-header bg-white d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 small">
+        <div>
+            <h6 class="mb-0">Restricciones horarias por empresa en convenio</h6>
+            <small class="text-muted">
+                Cada empresa aparece en una sola fila. Configura sus días y horarios desde el botón
+                <strong>"Configurar horarios"</strong>.
+            </small>
+        </div>
+        <div class="mt-2">
+            <!--Botón de crear nueva empresa de convenio -->
+            <a href="{% url 'convenios_empresas_registrar' %}"
+               class="btn btn-sm btn-primary w-100 w-md-auto">
+                <i class="bi bi-building-add"></i> Nueva empresa
+            </a>
+        </div>
+    </div>
+    <div class="card-body small">
+        <!-- Buscador -->
+        <form method="get" class="mb-3">
+            <div class="input-group input-group-sm">
+                <input type="text"
+                       name="q"
+                       value="{{ query }}"
+                       class="form-control"
+                       placeholder="Buscar por empresa o NIT...">
+                <button class="btn btn-outline-secondary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+        <!-- Tabla: una fila por empresa -->
+        <div class="table-responsive table-no-scroll">
+            <table class="table table-hover table-sm align-top crud-table tabla-restricciones">
+                <thead class="table-light">
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Resumen de horarios</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in empresas_convenio %}
+                    <tr>
+                        <td>
+                            <strong>{{ e.empresa }}</strong>
+                            {% if e.nit %}
+                                <br><span class="text-muted small">{{ e.nit }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% with e.restricciones_horarias.all as rs %}
+                                {% if rs %}
+                                    {% for r in rs %}
+                                        <span class="badge bg-light text-dark border me-1 mb-1">
+                                            {{ r.get_dia_semana_display }}:
+                                            {{ r.hora_inicio|time:"H:i" }}–{{ r.hora_fin|time:"H:i" }}
+                                        </span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted">Sin horarios configurados.</span>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-primary w-100 w-md-auto"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalHorarios{{ e.id }}">
+                                <i class="bi bi-clock-history"></i> Configurar horarios
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-4">
+                            No hay empresas de convenio registradas.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- ====== MODALES: uno por empresa ====== -->
+{% for e in empresas_convenio %}
+<div class="modal fade modal-restricciones" id="modalHorarios{{ e.id }}" tabindex="-1"
+     aria-labelledby="modalHorarios{{ e.id }}Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius:18px;">
+            <div class="modal-header">
+                <h5 class="modal-title small" id="modalHorarios{{ e.id }}Label">
+                    Restricciones horarias · {{ e.empresa }}
+                    {% if e.nit %}<span class="text-muted small">({{ e.nit }})</span>{% endif %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body small modal-body-scroll">
+                <!-- Form para crear NUEVOS horarios (varios días a la vez) -->
+                <form method="post" class="mb-3 border rounded-3 p-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="crear">
+                    <input type="hidden" name="empresa_convenio" value="{{ e.id }}">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Días de la semana</label>
+                            <div class="border rounded-3 p-2">
+                                <div class="row g-2">
+                                {% for code,label in form.fields.dia_semana.choices %}
+                                    <div class="col-6 col-md-3">
+                                        <div class="form-check small">
+                                            <input class="form-check-input" type="checkbox"
+                                                   name="dias_semana" id="dia_{{ code }}_{{ e.id }}"
+                                                   value="{{ code }}">
+                                            <label class="form-check-label" for="dia_{{ code }}_{{ e.id }}">
+                                            {{ label }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>    
+                            <small class="text-muted">Se creará un horario por cada día seleccionado.</small>
+                        </div>
+                        <!-- HORAS + BOTÓN (abajo) -->
+                        <div class="col-12">
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md-4">
+                                    <label class="form-label">Hora inicio</label>
+                                    {{ form.hora_inicio }}
+                                </div>                        
+                                <div class="col-md-4">
+                                    <label class="form-label">Hora fin</label>
+                                    {{ form.hora_fin }}
+                                </div>                    
+                                <div class="col-md-4 text-end">
+                                    <button type="button"
+                                            class="btn btn-sm btn-primary btn-agregar-horarios"
+                                            data-empresa="{{ e.id }}">
+                                        <i class="bi bi-plus-lg"></i> Agregar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!-- Tabla editable de horarios existentes -->
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle text-nowrap">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Día</th>
+                                <th>Horario</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyHorarios{{ e.id }}">
+                            {% include "parking/partials/_convenios_horarios_rows.html" with empresa=e %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-sm btn-secondary btn-cerrar-restricciones"
+                        data-bs-dismiss="modal">
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // CSRF
+    const csrfInput = document.querySelector('input[name=csrfmiddlewaretoken]');
+    const csrfToken = csrfInput ? csrfInput.value : '';
+    // ---- ELIMINAR HORARIO (solo una vez) ----
+    function attachDeleteHandlers(root) {
+        // Primero clonar los botones para limpiar handlers viejos
+        root.querySelectorAll('.btn-delete-horario').forEach(function (btn) {
+            const clone = btn.cloneNode(true);
+            btn.replaceWith(clone);
+        });
+        // Ahora sí, agregar el listener
+        root.querySelectorAll('.btn-delete-horario').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                if (!confirm('¿Eliminar este horario?')) return;
+
+                const row = this.closest('tr');
+                const restriccionId = this.dataset.id;
+                const formData = new FormData();
+                formData.append('action', 'editar');
+                formData.append('subaction', 'eliminar');
+                formData.append('restriccion_id', restriccionId);
+                formData.append('csrfmiddlewaretoken', csrfToken);
+
+                fetch("{% url 'convenios_control_restricciones_horarias' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        row.remove(); // se borra solo la fila
+                    } else {
+                        alert('No se pudo eliminar el horario.');
+                    }
+                })
+                .catch(() => {
+                    alert('Error al eliminar el horario.');
+                });
+            });
+        });
+    }
+
+// ---- AGREGAR HORARIOS POR AJAX ----
+document.querySelectorAll('.btn-agregar-horarios').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+        //IMPORTANTE: evitar el submit normal del form
+        e.preventDefault();
+        const empresaId = this.dataset.empresa;
+        const modal = this.closest('.modal-content');
+        const form = modal.querySelector('form[method="post"]'); // el form de crear
+        const horaInicioInput = form.querySelector('input[name="hora_inicio"]');
+        const horaFinInput = form.querySelector('input[name="hora_fin"]');
+        const checks = form.querySelectorAll('input[name="dias_semana"]:checked');
+        if (!horaInicioInput.value || !horaFinInput.value || checks.length === 0) {
+            alert('Selecciona al menos un día y un rango de horas.');
+            return;
+        }
+        const formData = new FormData();
+        formData.append('action', 'crear');
+        formData.append('empresa_convenio', empresaId);
+        formData.append('hora_inicio', horaInicioInput.value);
+        formData.append('hora_fin', horaFinInput.value);
+        formData.append('csrfmiddlewaretoken', csrfToken);
+        checks.forEach(ch => formData.append('dias_semana', ch.value));
+        fetch("{% url 'convenios_control_restricciones_horarias' %}", {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.ok) {
+                const tbody = document.getElementById('tbodyHorarios' + empresaId);
+                if (tbody) {
+                    tbody.innerHTML = data.rows_html;
+                    // volver a enganchar los botones de eliminar dentro de este tbody
+                    attachDeleteHandlers(tbody);
+                }
+                // Limpiar selección de días y horas
+                checks.forEach(ch => ch.checked = false);
+                horaInicioInput.value = '';
+                horaFinInput.value = '';
+            } else {
+                alert('No se pudo agregar el horario.');
+            }
+        })
+        .catch(() => {
+            alert('Error al agregar el horario.');
+        });
+    });
+});
+
+//Enganchar los delete al cargar por primera vez
+attachDeleteHandlers(document);
+
+//Recargar la página cuando se cierre cualquier modal de restricciones
+    document.querySelectorAll('.modal-restricciones').forEach(function (modalEl) {
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            window.location.reload();
+        });
+    });
+});
+</script>
+{% endblock %}

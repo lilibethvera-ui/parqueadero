@@ -1,0 +1,82 @@
+/*============================== REGISTRO DE CLIENTES =============================*/
+@media (max-width: 576px){
+  .form-table thead{ display:none; }
+  .form-table tbody tr{
+    display:block;
+    border:1px solid rgba(15,23,42,.12);
+    border-radius:14px;
+    padding:12px;
+    margin-bottom:12px;
+  }
+  .form-table tbody tr > td{display:block;border:0 !important;
+    padding:8px 0 !important;white-space: normal !important;}
+  .form-table td[data-label="Cliente"]{ order: 1; }
+  .form-table td[data-label="Documento"]{ order: 2; }
+  .form-table td[data-label="Vehículos"]{ order: 3; }
+  .form-table td.td-contacto{ order: 4; }
+  .form-table td.text-center{ order: 5; }
+  .form-table td.td-acciones{ order: 6; }
+  .form-table td[data-label="Cliente"] .row.g-1{ margin:0; }
+  .form-table td[data-label="Cliente"] .row.g-1 > div{ padding:0; }
+  .form-table td.td-contacto .row.g-1{margin:0;}
+  .form-table td.td-contacto .row.g-1 > div{padding:0;flex: 0 0 100%;max-width: 100%;}
+
+  .form-table td.text-center,
+  .form-table td.td-acciones{
+    display:inline-block;
+    vertical-align: middle;
+    width:auto;
+    padding-top:10px !important;
+  }
+  .form-table td.text-center{margin-right:12px; /* separación estado vs botones */}
+  .form-table td.td-acciones{text-align:left !important;}
+  .form-table td.td-acciones .btn-group{width:auto;display:flex;gap:10px;}
+  .form-table td.td-acciones .btn-group .btn{width:auto;}
+}
+
+/*======================= HISTORIAL DE ESTACIONAMIENTO ==================================*/
+@media (max-width: 576px){
+  .responsive-table tbody td::before{content: attr(data-label);display:block;
+    font-size:12px;font-weight:700;color: rgba(15,23,42,.75);margin-bottom:6px;}
+}
+/*=========================== INFORMACION DE EMPRESA =====================================*/
+/*==== not iene estilos ====*/
+/*=============================== CONTACTOS AUTORIZADOS ==================================*/
+.form-check-input { width:1.2em; height:1.2em;}
+ /*============================ TERMINOS DE PAGO =============================*/
+.table-wrap{ width:100%; overflow:visible; }
+.modal-body-scroll{max-height: calc(100vh - 200px);overflow-y: auto;}
+
+@media (max-width:576px){
+  .modal-dialog{ margin:.5rem; }
+  .modal-body-scroll{ max-height: calc(100vh - 150px); }
+}
+@media (min-width:768px){
+  .w-md-auto{ width:auto !important; }
+}
+@media (max-width: 576px){
+  .empresas-terminos-table thead{ display:none; }
+  .empresas-terminos-table tbody tr{
+    display:block;
+    border:1px solid rgba(15,23,42,.12);
+    border-radius:14px;
+    padding:12px;
+    margin-bottom:12px;
+    background:#fff;
+  }
+  .empresas-terminos-table tbody td{display:block;border:0 !important;
+    padding:10px 0 !important;white-space: normal !important;}
+  .empresas-terminos-table tbody td::before{
+    content: attr(data-label);
+    display:block;
+    font-size:12px;
+    font-weight:700;
+    color: rgba(15,23,42,.75);
+    margin-bottom:6px;
+  }
+  .empresas-terminos-table td.td-acciones{text-align:left !important;padding-top:12px !important;}
+  .empresas-terminos-table td.td-acciones button{
+    width:100%;
+  }
+}
+

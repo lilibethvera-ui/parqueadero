@@ -1,0 +1,578 @@
+{% load static %}
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header d-flex align-items-center justify-content-between p-3">
+        <div class="logo-container d-flex align-items-center me-2">
+            <div class="logo-circle me-2">
+                <img src="{% static 'parking/img/logo1.png' %}" alt="Logo" style="max-height: 40px;">
+            </div>
+            <div>
+                <span class="text-white-50 small" style="font-size: 0.75rem;">
+                    <i class="bi bi-geo-alt"></i> {{ request.session.sucursal_nombre|default:"Sede Global" }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav mt-2 px-3">
+        <div class="sidebar-group mb-2">
+            <a class="sidebar-link d-flex justify-content-between align-items-center"
+                data-bs-toggle="collapse"
+                href="#menuDashboard"
+                role="button"
+                aria-expanded="{% if active_menu == 'dashboard' %}true{% else %}false{% endif %}"
+                aria-controls="menuDashboard">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-speedometer2"></i>
+                    <span class="nav-text">Dashboard</span>
+                </div>
+                <i class="bi bi-chevron-down small nav-text"></i>
+            </a>    
+            <div class="collapse sidebar-submenu {% if active_menu == 'dashboard' %}show{% endif %}" id="menuDashboard">
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuResumenGeneral"
+                    role="button"
+                    aria-expanded="{% if active_submenu == 'dashboard_resumen' %}true{% else %}false{% endif %}"
+                    aria-controls="submenuResumenGeneral">
+                    <span>Resumen General</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse {% if active_submenu == 'dashboard_resumen' %}show{% endif %}" id="submenuResumenGeneral">
+                    <a href="{% url 'dashboard_resumen_general' %}" class="sidebar-sublink child">Estado general</a>
+                    <a href="{% url 'dashboard_estado_actual' %}" class="sidebar-sublink child">Estado actual del parqueadero</a>
+                    <a href="{% url 'dashboard_ocupacion_tiempo_real' %}" class="sidebar-sublink child">Ocupación en tiempo real</a>
+                    <a href="{% url 'dashboard_ingresos_dia' %}" class="sidebar-sublink child">Ingresos del día</a>
+                    <a href="{% url 'dashboard_vehiculos_actuales' %}" class="sidebar-sublink child">Vehículos actualmente animados</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuMetricasClave"
+                    role="button"
+                    aria-expanded="{% if active_submenu == 'dashboard_resumen' %}true{% else %}false{% endif %}"
+                    aria-controls="submenuMetricasClave">
+                    <span>Métricas Clave</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse {% if active_submenu == 'dashboard_resumen' %}show{% endif %}" id="submenuMetricasClave">
+                    <a href="{% url 'dashboard_ingresos_periodos' %}" class="sidebar-sublink child">Ingresos mensuales / trimestrales</a>
+                    <a href="{% url 'dashboard_tasa_ocupacion_promedio' %}" class="sidebar-sublink child">Tasa de ocupación promedio</a>
+                    <a href="{% url 'dashboard_vehiculos_frecuentes' %}" class="sidebar-sublink child">Vehículos más frecuentes</a>
+                    <a href="{% url 'dashboard_horarios_pico' %}" class="sidebar-sublink child">Horarios pico</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-group mb-2">
+            <a class="sidebar-link d-flex justify-content-between align-items-center"
+                data-bs-toggle="collapse"
+                href="#menuPos"
+                role="button"
+                aria-expanded="false"
+                aria-controls="menuPos">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-receipt-cutoff"></i>
+                    <span class="nav-text">POS - Punto de Venta</span>
+                </div>
+                <i class="bi bi-chevron-down small nav-text"></i>
+            </a>
+            <div class="collapse sidebar-submenu" id="menuPos">
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center"
+                   data-bs-toggle="collapse"
+                   href="#submenuPosIngresos"
+                   role="button"
+                   aria-expanded="false"
+                   aria-controls="submenuPosIngresos">
+                    <span>Registro de Ingresos</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuPosIngresos">
+                    <a href="{% url 'pos_ingresos_entrada' %}" class="sidebar-sublink child">Entrada de vehículos</a>
+                    <a href="{% url 'pos_ingresos_tipo_vehiculo' %}" class="sidebar-sublink child">Selección de tipo de vehículo</a>
+                    <a href="{% url 'pos_ingresos_asignar_espacio' %}" class="sidebar-sublink child">Asignación de espacio</a>
+                    <a href="{% url 'pos_ingresos_fotografia' %}" class="sidebar-sublink child">Toma de fotografía</a>
+                    <a href="{% url 'pos_ingresos_ticket' %}" class="sidebar-sublink child">Generación de ticket</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                   data-bs-toggle="collapse"
+                   href="#submenuPosSalidas"
+                   role="button"
+                   aria-expanded="false"
+                   aria-controls="submenuPosSalidas">
+                    <span>Registro de Salidas</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuPosSalidas">
+                    <a href="{% url 'pos_salidas_tiempo' %}" class="sidebar-sublink child">Cálculo automático de tiempo</a>
+                    <a href="{% url 'pos_salidas_tarifas' %}" class="sidebar-sublink child">Aplicación de tarifas</a>
+                    <a href="{% url 'pos_salidas_pago_efectivo' %}" class="sidebar-sublink child">Pago en efectivo</a>
+                    <a href="{% url 'pos_salidas_pago_tarjeta' %}" class="sidebar-sublink child">Pago tarjeta crédito/débito</a>
+                    <a href="{% url 'pos_salidas_pago_transferencia' %}" class="sidebar-sublink child">Pago por transferencia</a>
+                    <a href="{% url 'pos_salidas_pago_convenios' %}" class="sidebar-sublink child">Pago por convenios</a>
+                    <a href="{% url 'pos_salidas_factura' %}" class="sidebar-sublink child">Impresión de comprobante</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                   data-bs-toggle="collapse"
+                   href="#submenuPosReservas"
+                   role="button"
+                   aria-expanded="false"
+                   aria-controls="submenuPosReservas">
+                    <span>Reservas</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuPosReservas">
+                    <a href="{% url 'pos_reservas_crear' %}" class="sidebar-sublink child">Crear reservas</a>
+                    <a href="{% url 'pos_reservas_modificar' %}" class="sidebar-sublink child">Modificar reservas</a>
+                    <a href="{% url 'pos_reservas_cancelar' %}" class="sidebar-sublink child">Cancelar reservas</a>
+                    <a href="{% url 'pos_reservas_calendario' %}" class="sidebar-sublink child">Calendario de reservas</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-group mb-2">
+            <a class="sidebar-link d-flex justify-content-between align-items-center"
+                data-bs-toggle="collapse"
+                href="#menuTarifas"
+                role="button"
+                aria-expanded="false"
+                aria-controls="menuTarifas">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-cash-coin"></i>
+                    <span class="nav-text">Gestión de Tarifas</span>
+                </div>
+                <i class="bi bi-chevron-down small nav-text"></i>
+            </a>
+            <div class="collapse sidebar-submenu" id="menuTarifas">
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center"
+                    data-bs-toggle="collapse"
+                    href="#submenuTarifasBase"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuTarifasBase">
+                    <span>Tarifas base</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuTarifasBase">
+                    <a href="{% url 'tarifas_base_tiempo' %}" class="sidebar-sublink child">Hora o fracción</a>
+                    <a href="{% url 'tarifas_base_dia_noche' %}" class="sidebar-sublink child">Tarifa dia y noche</a>
+                    <a href="{% url 'tarifas_base_fines_semana' %}" class="sidebar-sublink child">Tarifa fines de semana</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuTarifasEspeciales"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuTarifasEspeciales">
+                    <span>Tarifas especiales</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuTarifasEspeciales">
+                    <a href="{% url 'tarifas_especiales_tipo_vehiculo' %}" class="sidebar-sublink child">Por tipo de vehículo</a>
+                    <a href="{% url 'tarifas_especiales_promocionales' %}" class="sidebar-sublink child">Tarifas promocionales</a>
+                    <a href="{% url 'tarifas_especiales_descuentos_volumen' %}" class="sidebar-sublink child">Descuentos por volumen</a>
+                    <a href="{% url 'tarifas_especiales_temporada' %}" class="sidebar-sublink child">Tarifas por temporada</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuTarifasPaquetes"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuTarifasPaquetes">
+                    <span>Paquetes y planes</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuTarifasPaquetes">
+                    <a href="{% url 'tarifas_paquetes_mensualidad' %}" class="sidebar-sublink child">Mensualidad</a>
+                    <a href="{% url 'tarifas_paquetes_corporativos' %}" class="sidebar-sublink child">Planes corporativos</a>
+                    <a href="{% url 'tarifas_paquetes_promocionales' %}" class="sidebar-sublink child">Paquetes promocionales</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-group mb-2">
+            <a class="sidebar-link d-flex justify-content-between align-items-center"
+               data-bs-toggle="collapse"
+               href="#menuConvenios"
+               role="button"
+               aria-expanded="false"
+               aria-controls="menuConvenios">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-briefcase"></i>
+                    <span class="nav-text">Gestión de Convenios</span>
+                </div>
+                <i class="bi bi-chevron-down small nav-text"></i>
+            </a>
+            <div class="collapse sidebar-submenu" id="menuConvenios">
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center"
+                   data-bs-toggle="collapse"
+                   href="#submenuConveniosEmpresas"
+                   role="button"
+                   aria-expanded="false"
+                   aria-controls="submenuConveniosEmpresas">
+                    <span>Empresas Convenio</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuConveniosEmpresas">
+                    <a href="{% url 'convenios_empresas_registrar' %}" class="sidebar-sublink child">Registrar nueva empresa</a>
+                    <a href="{% url 'convenios_empresas_limites' %}" class="sidebar-sublink child">Límites y restricciones</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuConveniosTarifas"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuConveniosTarifas">
+                    <span>Tarifas de Convenio</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuConveniosTarifas">
+                    <a href="{% url 'convenios_tarifas_configurar' %}" class="sidebar-sublink child">Configurar tarifas especiales</a>
+                    <a href="{% url 'convenios_tarifas_vigencia' %}" class="sidebar-sublink child">Períodos de vigencia</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuConveniosControl"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuConveniosControl">
+                    <span>Control de Acceso</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuConveniosControl">
+                    <a href="{% url 'convenios_control_restricciones_horarias' %}" class="sidebar-sublink child">Restricciones horarias</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-group mb-2">
+            <a class="sidebar-link d-flex justify-content-between align-items-center"
+                data-bs-toggle="collapse"
+                href="#menuClientes"
+                role="button"
+                aria-expanded="{% if active_menu == 'clientes' %}true{% else %}false{% endif %}"
+                aria-controls="menuClientes">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-people-fill"></i>
+                    <span class="nav-text">Gestión de Clientes</span>
+                </div>
+                <i class="bi bi-chevron-down small nav-text"></i>
+            </a>
+            <div class="collapse sidebar-submenu {% if active_menu == 'clientes' %}show{% endif %}" id="menuClientes">
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center"
+                    data-bs-toggle="collapse"
+                    href="#submenuClientesFrecuentes"
+                    role="button"
+                    aria-expanded="{% if active_submenu == 'frecuentes' %}true{% else %}false{% endif %}"
+                    aria-controls="submenuClientesFrecuentes">
+                    <span>Clientes Frecuentes</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse {% if active_submenu == 'frecuentes' %}show{% endif %}" id="submenuClientesFrecuentes">
+                    <a href="{% url 'clientes_frecuentes_listado' %}" class="sidebar-sublink child {% if section_code == 'CF-REGISTRO' %}active{% endif %}">Registro de clientes</a>
+                    <a href="{% url 'clientes_frecuentes_historial' %}" class="sidebar-sublink child {% if section_code == 'CF-HISTORIAL' %}active{% endif %}">Historial de estacionamientos</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuClientesCorporativos"
+                    role="button"
+                    aria-expanded="{% if active_submenu == 'corporativos' %}true{% else %}false{% endif %}"
+                    aria-controls="submenuClientesCorporativos">
+                    <span>Clientes Corporativos</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse {% if active_submenu == 'corporativos' %}show{% endif %}" id="submenuClientesCorporativos">
+                    <a href="{% url 'clientes_corporativos_info_empresa' %}" class="sidebar-sublink child {% if section_code == 'CC-EMPRESA' %}active{% endif %}">Información de empresa</a>
+                    <a href="{% url 'clientes_corporativos_contactos_autorizados' %}" class="sidebar-sublink child {% if section_code == 'CC-CONTACTOS' %}active{% endif %}">Contactos autorizados</a>
+                    <a href="{% url 'clientes_corporativos_vehiculos_registrados' %}" class="sidebar-sublink child {% if section_code == 'CC-VEHICULOS' %}active{% endif %}">Vehículos registrados</a>
+                    <a href="{% url 'clientes_corporativos_terminos_pago' %}" class="sidebar-sublink child {% if section_code == 'CC-PAGOS' %}active{% endif %}">Términos de pago</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuClientesFidelidad"
+                    role="button"
+                    aria-expanded="{% if active_submenu == 'fidelidad' %}true{% else %}false{% endif %}"
+                    aria-controls="submenuClientesFidelidad">
+                    <span>Programas de Fidelidad</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse {% if active_submenu == 'fidelidad' %}show{% endif %}" id="submenuClientesFidelidad">
+                    <a href="{% url 'clientes_fidelidad_puntos' %}" class="sidebar-sublink child {% if section_code == 'PF-PUNTOS' %}active{% endif %}">Puntos por estacionamiento</a>
+                    <a href="{% url 'clientes_fidelidad_beneficios' %}" class="sidebar-sublink child {% if section_code == 'PF-BENEFICIOS' %}active{% endif %}">Beneficios y premios</a>
+                    <a href="{% url 'clientes_fidelidad_niveles' %}" class="sidebar-sublink child {% if section_code == 'PF-NIVELES' %}active{% endif %}">Niveles de membresía</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-group mb-2">
+            <a class="sidebar-link d-flex justify-content-between align-items-center"
+                data-bs-toggle="collapse"
+                href="#menuReportes"
+                role="button"
+                aria-expanded="false"
+                aria-controls="menuReportes">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    <span class="nav-text">Reportes y Análisis</span>
+                </div>
+                <i class="bi bi-chevron-down small nav-text"></i>
+            </a>
+            <div class="collapse sidebar-submenu" id="menuReportes">
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center"
+                    data-bs-toggle="collapse"
+                    href="#submenuReportesFinancieros"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuReportesFinancieros">
+                    <span>Reportes Financieros</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuReportesFinancieros">
+                    <a href="{% url 'reportes_financieros_ingresos' %}" class="sidebar-sublink child">Ingresos diarios/semanal/mensual</a>
+                    <a href="{% url 'reportes_financieros_flujo_caja' %}" class="sidebar-sublink child">Flujo de caja</a>
+                    <a href="{% url 'reportes_financieros_comparativos' %}" class="sidebar-sublink child">Comparativos periódicos</a>
+                    <a href="{% url 'reportes_financieros_tendencias' %}" class="sidebar-sublink child">Análisis de tendencias</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuReportesOperativos"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuReportesOperativos">
+                    <span>Reportes Operativos</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuReportesOperativos">
+                    <a href="{% url 'reportes_operativos_ocupacion_horarios' %}" class="sidebar-sublink child">Ocupación por horarios</a>
+                    <a href="{% url 'reportes_operativos_tipos_vehiculos' %}" class="sidebar-sublink child">Tipos de vehículos</a>
+                    <a href="{% url 'reportes_operativos_tiempos_permanencia' %}" class="sidebar-sublink child">Tiempos de permanencia</a>
+                    <a href="{% url 'reportes_operativos_espacios_mas_utilizados' %}" class="sidebar-sublink child">Espacios más utilizados</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuReportesClientes"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuReportesClientes">
+                    <span>Reportes de Clientes</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuReportesClientes">
+                    <a href="{% url 'reportes_clientes_frecuentes' %}" class="sidebar-sublink child">Clientes frecuentes</a>
+                    <a href="{% url 'reportes_clientes_comportamiento_uso' %}" class="sidebar-sublink child">Comportamiento de uso</a>
+                    <a href="{% url 'reportes_clientes_preferencias_pago' %}" class="sidebar-sublink child">Preferencias de pago</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuReportesPersonalizados"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuReportesPersonalizados">
+                    <span>Reportes Personalizados</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuReportesPersonalizados">
+                    <a href="{% url 'reportes_personalizados_filtros' %}" class="sidebar-sublink child">Filtros por fecha/tipo/vehículo</a>
+                    <a href="{% url 'reportes_personalizados_exportacion' %}" class="sidebar-sublink child">Exportación a Excel/PDF</a>
+                    <a href="{% url 'reportes_personalizados_graficos' %}" class="sidebar-sublink child">Gráficos y estadísticas</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-group mb-2">
+            <a class="sidebar-link d-flex justify-content-between align-items-center"
+                data-bs-toggle="collapse"
+                href="#menuConfiguracionSistema"
+                role="button"
+                aria-expanded="false"
+                aria-controls="menuConfiguracionSistema">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-gear-fill"></i>
+                    <span class="nav-text">Configuración del Sistema</span>
+                </div>
+                <i class="bi bi-chevron-down small nav-text"></i>
+            </a>
+            <div class="collapse sidebar-submenu" id="menuConfiguracionSistema">
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center"
+                    data-bs-toggle="collapse"
+                    href="#submenuConfigGeneral"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuConfigGeneral">
+                    <span>Configuración General</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuConfigGeneral">
+                    <a href="{% url 'config_sistema_general_datos_negocio' %}" class="sidebar-sublink child">Datos del negocio</a>
+                    <a href="{% url 'config_sistema_general_horarios' %}" class="sidebar-sublink child">Horarios de operación</a>
+                    <a href="{% url 'config_sistema_general_impuestos' %}" class="sidebar-sublink child">Impuestos aplicables</a>
+                    <a href="{% url 'config_sistema_general_moneda_formatos' %}" class="sidebar-sublink child">Moneda y formatos</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuConfigEspacios"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuConfigEspacios">
+                    <span>Configuración de Espacios</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuConfigEspacios">
+                    <a href="{% url 'config_espacios_mapa' %}" class="sidebar-sublink child">Mapa del parqueadero</a>
+                    <a href="{% url 'config_espacios_tipos' %}" class="sidebar-sublink child">Tipos de espacios</a>
+                    <a href="{% url 'config_espacios_zonas' %}" class="sidebar-sublink child">Asignación de zonas</a>
+                    <a href="{% url 'config_espacios_especiales' %}" class="sidebar-sublink child">Espacios especiales</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuConfigDispositivos"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuConfigDispositivos">
+                    <span>Configuración de Dispositivos</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuConfigDispositivos">
+                    <a href="{% url 'config_dispositivos_impresoras' %}" class="sidebar-sublink child">Impresoras</a>
+                    <a href="{% url 'config_dispositivos_lectores' %}" class="sidebar-sublink child">Lectores de código</a>
+                    <a href="{% url 'config_dispositivos_camaras' %}" class="sidebar-sublink child">Cámaras</a>
+                    <a href="{% url 'config_dispositivos_barreras' %}" class="sidebar-sublink child">Barreras de acceso</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuConfigUsuarios"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuConfigUsuarios">
+                    <span>Usuarios y Permisos</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuConfigUsuarios">
+                    <a href="{% url 'config_usuarios_crear' %}" class="sidebar-sublink child">Crear usuarios</a>
+                    <a href="{% url 'config_usuarios_roles_permisos' %}" class="sidebar-sublink child">Roles y permisos</a>
+                    <a href="{% url 'config_usuarios_horarios_acceso' %}" class="sidebar-sublink child">Horarios de acceso</a>
+                    <a href="{% url 'config_usuarios_auditoria' %}" class="sidebar-sublink child">Auditoría de actividades</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-group mb-2">
+            <a class="sidebar-link d-flex justify-content-between align-items-center"
+                data-bs-toggle="collapse"
+                href="#menuContable"
+                role="button"
+                aria-expanded="false"
+                aria-controls="menuContable">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-calculator"></i>
+                    <span class="nav-text">Módulo Contable</span>
+                </div>
+                <i class="bi bi-chevron-down small nav-text"></i>
+            </a>
+            <div class="collapse sidebar-submenu" id="menuContable">
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center"
+                    data-bs-toggle="collapse"
+                    href="#submenuContableCierre"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuContableCierre">
+                    <span>Cierre de Caja</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuContableCierre">
+                    <a href="{% url 'contable_cierre_arqueo' %}" class="sidebar-sublink child">Arqueo de caja</a>
+                    <a href="{% url 'contable_cierre_conciliacion' %}" class="sidebar-sublink child">Conciliación bancaria</a>
+                    <a href="{% url 'contable_cierre_reporte_cierres' %}" class="sidebar-sublink child">Reporte de cierres</a>
+                    <a href="{% url 'contable_cierre_historico' %}" class="sidebar-sublink child">Histórico de cierres</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuContableFacturacion"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuContableFacturacion">
+                    <span>Facturación</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuContableFacturacion">
+                    <a href="{% url 'contable_facturacion_emision' %}" class="sidebar-sublink child">Emisión de facturas</a>
+                    <a href="{% url 'contable_facturacion_notas_credito' %}" class="sidebar-sublink child">Notas de crédito</a>
+                    <a href="{% url 'contable_facturacion_control_series' %}" class="sidebar-sublink child">Control de series</a>
+                    <a href="{% url 'contable_facturacion_envio_electronico' %}" class="sidebar-sublink child">Envío electrónico</a>
+                </div>
+
+                <a class="sidebar-sublink-header d-flex justify-content-between align-items-center mt-2"
+                    data-bs-toggle="collapse"
+                    href="#submenuContableCxc"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submenuContableCxc">
+                    <span>Cuentas por Cobrar</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse" id="submenuContableCxc">
+                    <a href="{% url 'contable_cxc_estado_cuentas' %}" class="sidebar-sublink child">Estado de cuentas</a>
+                    <a href="{% url 'contable_cxc_cartera_vencida' %}" class="sidebar-sublink child">Cartera vencida</a>
+                    <a href="{% url 'contable_cxc_recordatorios_pago' %}" class="sidebar-sublink child">Recordatorios de pago</a>
+                    <a href="{% url 'contable_cxc_conciliaciones' %}" class="sidebar-sublink child">Conciliaciones</a>
+                </div>
+            </div>
+        </div>        
+
+        <div class="sidebar-group mb-2">
+            <a class="sidebar-link d-flex justify-content-between align-items-center"
+                data-bs-toggle="collapse"
+                href="#menuSoporte"
+                role="button"
+                aria-expanded="false"
+                aria-controls="menuSoporte">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-life-preserver"></i>
+                    <span class="nav-text">Soporte</span>
+                </div>
+                <i class="bi bi-chevron-down small nav-text"></i>
+            </a>
+            <div class="collapse sidebar-submenu" id="menuSoporte">
+                <a href="{% url 'soporte_tecnico_tickets' %}" class="sidebar-sublink child">Tickets de soporte</a>
+                <a href="{% url 'soporte_mantenimiento_backups' %}" class="sidebar-sublink child">Copias de seguridad</a>
+            </div>
+        </div>
+
+        <div class="sidebar-group mb-2">
+            <a class="sidebar-link d-flex justify-content-between align-items-center"
+                data-bs-toggle="collapse"
+                href="#menuAlertas"
+                role="button"
+                aria-expanded="false"
+                aria-controls="menuAlertas">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-bell-fill"></i>
+                    <span class="nav-text">Sistema de Alertas</span>
+                </div>
+                <i class="bi bi-chevron-down small nav-text"></i>
+            </a>
+            <div class="collapse sidebar-submenu" id="menuAlertas">
+                <a href="{% url 'alertas_operativas_espacios_llenos' %}" class="sidebar-sublink child">Espacios llenos</a>
+                <a href="{% url 'alertas_financieras_cierres_pendientes' %}" class="sidebar-sublink child">Cierres pendientes</a>
+            </div>
+        </div>
+    </nav>
+</aside>
+
+
+
+

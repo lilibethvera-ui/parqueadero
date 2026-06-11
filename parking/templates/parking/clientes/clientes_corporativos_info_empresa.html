@@ -1,0 +1,186 @@
+{% extends "parking/base.html" %}
+
+{% block title %}Clientes corporativos · Información de empresa{% endblock %}
+
+{% block page_title %}
+Gestión de Clientes · Clientes Corporativos
+{% endblock %}
+
+{% block content %}
+<div class="card" style="border-radius:16px; border:none; box-shadow:0 12px 30px rgba(15,23,42,0.05);">
+    <div class="card-header bg-white d-flex flex-column align-items-start gap-2 small">
+        <div>
+            <h6 class="mb-0">Información de empresas corporativas</h6>
+            <small class="text-muted">
+                Administra empresas con convenios: NIT, razón social y contacto principal.
+            </small>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-primary w-100 py-2 w-md-auto" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#modalNuevaEmpresa">
+                <i class="bi bi-building-add"></i> Nueva empresa
+            </button>
+        </div>
+    </div>
+    <div class="card-body small">
+        <!-- Buscador -->
+        <form method="get" class="mb-3">
+            <div class="input-group input-group-sm">
+                <input type="text"
+                       name="q"
+                       value="{{ query }}"
+                       class="form-control"
+                       placeholder="Buscar por razón social, NIT o contacto...">
+                <button class="btn btn-outline-secondary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+        <!-- Tabla CRUD inline -->
+        <div class="table-responsive">
+            <table class="table table-hover table-sm align-top crud-table empresas-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>Razón social</th>
+                        <th>NIT</th>
+                        <th>Contacto</th>
+                        <th>Email</th>
+                        <th>Ciudad</th>
+                        <th>Estado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in empresas %}
+                    <tr>
+                        <form method="post" class="m-0 p-0">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="editar">
+                            <input type="hidden" name="empresa_id" value="{{ e.id }}">
+                            <td data-label="Razón social">
+                                <input type="text"
+                                       name="razon_social"
+                                       value="{{ e.razon_social }}"
+                                       class="form-control form-control-sm">
+                            </td>
+                            <td data-label="NIT">
+                                <input type="text"
+                                       name="nit"
+                                       value="{{ e.nit }}"
+                                       class="form-control form-control-sm">
+                            </td>
+                            <td data-label="Contacto">
+                                {% if e.contacto %}
+                                    <strong>{{ e.contacto.nombre }} {{ e.contacto.apellidos }}</strong><br>
+                                    <span class="text-muted small">
+                                        {{ e.contacto.documento }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted small">Sin contacto asignado</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <input type="email"
+                                       name="email"
+                                       value="{{ e.email }}"
+                                       class="form-control form-control-sm">
+                            </td>
+                            <td data-label="Ciudad">
+                                <input type="text"
+                                       name="ciudad"
+                                       value="{{ e.ciudad }}"
+                                       class="form-control form-control-sm">
+                            </td>
+                            <td data-label="Estado">
+                                <div class="form-check form-switch d-inline-flex align-items-center">
+                                    <input class="form-check-input"
+                                       type="checkbox"
+                                       name="estado_activo"
+                                       value="1"
+                                       {% if e.estado == "ACTIVA" %}checked{% endif %}>
+                                    <span class="small ms-2">
+                                    {% if e.estado == "ACTIVA" %}Activa{% else %}Inactiva{% endif %}
+                                    </span>
+                                </div>
+                            </td>
+
+                            <td class="text-end" data-label="Acción">
+                                <button type="submit" class="btn btn-sm btn-outline-primary w-100 w-md-auto">
+                                    <i class="bi bi-save"></i> <span class="d-inline d-md-none">Guardar</span>
+                                </button>
+                            </td>
+                        </form>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">
+                            No hay empresas corporativas registradas.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- MODAL NUEVA EMPRESA -->
+<div class="modal fade" id="modalNuevaEmpresa" tabindex="-1" aria-labelledby="modalNuevaEmpresaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="border-radius:18px;">
+            <div class="modal-header">
+                <h5 class="modal-title small" id="modalNuevaEmpresaLabel">
+                    Registrar nueva empresa
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="crear">
+                <div class="modal-body small">
+                    <div class="row g-2">
+                        <div class="col-md-8">
+                            <label class="form-label">Razón social</label>
+                            {{ form.razon_social }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">NIT</label>
+                            {{ form.nit }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Contacto (cliente existente)</label>
+                            {{ form.contacto }}
+
+                        <div class="col-md-3">
+                            <label class="form-label">Estado</label>
+                            {{ form.estado }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            {{ form.email }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Ciudad</label>
+                            {{ form.ciudad }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Dirección</label>
+                            {{ form.direccion }}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary"
+                            data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="bi bi-check-lg"></i> Guardar empresa
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

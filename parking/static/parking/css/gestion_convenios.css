@@ -1,0 +1,194 @@
+/* ========================== EMPRESAS CONVENIO ======================== */
+.table-no-scroll {overflow-x: visible !important;}
+
+@media (min-width: 768px) {
+  .w-md-auto {width: auto !important;}
+}
+
+.small-check {transform: scale(0.85);margin: 0;}
+
+/* --------------- BASE – TABLAS RESPONSIVAS --------------- */
+.responsive-table th,
+.responsive-table td {white-space: normal !important;vertical-align: top;}
+
+/* ---------------- FORM TABLE --------------------------- */
+.form-table .form-control,
+.form-table .form-select,
+.form-table input,
+.form-table select {width: 100%;min-width: 0;max-width: 100%;}
+.chips-table .chips-wrap {display: flex;flex-wrap: wrap;
+  gap: .4rem;align-items: center;min-width: 0;}
+
+.chips-table .chips-wrap .badge,
+.chips-table .chips-wrap .chip {
+  display: inline-flex;
+  align-items: center;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
+}
+.chips-table .chips-wrap .badge {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.12);
+  color: #111827;
+  border-radius: 999px;
+  padding: .25rem .55rem;
+  font-weight: 500;
+  line-height: 1.1;
+}
+.py-2 {padding-top: .3rem !important; padding-bottom: .3rem !important;}
+.btn-outline-primary {font-size: .65rem;}
+.modal-body-scroll {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+/* --------------- MÓVIL --------------------- */
+@media (max-width: 768px) {
+  .responsive-table thead {display: none;}
+  .responsive-table,
+  .responsive-table tbody,
+  .responsive-table tr,
+  .responsive-table td {display: block;width: 100%;}
+  .responsive-table tr {
+    border: 1px solid rgba(0,0,0,.10);
+    border-radius: .75rem;
+    padding: .75rem;
+    margin-bottom: .75rem;
+    background: #fff;
+    box-sizing: border-box;
+  }
+  .responsive-table td {border: 0;padding: .35rem 0;}
+  .responsive-table td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: .78rem;
+    font-weight: 700;
+    opacity: .65;
+    margin-bottom: .25rem;
+  }
+  .responsive-table td.text-end {text-align: left !important;margin-top: .35rem;}
+  .chips-table .chips-wrap {display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));gap: .4rem;}
+  .chips-table .chips-wrap .badge,
+  .chips-table .chips-wrap .chip {width: 100%;max-width: 100%;text-align: left;}
+  .empresas-table td.text-center,
+  .empresas-table td.text-end {text-align: center !important;}
+  .mb-0 {font-size: .9rem;}
+}
+
+@media (max-width: 768px) {
+  [id^="modalLimites"] .limites-cuantitativos tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .75rem;
+  }
+
+  [id^="modalLimites"] .limites-cuantitativos tbody tr > td {
+    width: auto !important;
+    display: block;
+  }
+}
+
+/*================== TARIFAS CONVENIO ================================*/
+.table-no-scroll {overflow-x: visible !important;}
+
+@media (min-width: 768px) {
+  .w-md-auto {width: auto !important;}
+}
+/* -------------------Tabla base-------------------------- */
+.crud-table th,
+.crud-table td {white-space: normal !important;vertical-align: top;}
+
+.crud-table .form-control,
+.crud-table .form-select,
+.crud-table input,
+.crud-table select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.crud-table small,
+.crud-table .form-text {display: block;white-space: normal;}
+.small-check {transform: scale(0.85);margin: 0;}
+
+/* ----------- MODO MÓVIL – Tablas se convierten en CARDS ------------ */
+@media (max-width: 768px) {
+  .crud-table thead {display: none;}
+  .crud-table,
+  .crud-table tbody,
+  .crud-table tr,
+  .crud-table td {display: block;width: 100%;}
+  .crud-table tr {border: 1px solid rgba(0, 0, 0, .10);
+    border-radius: .75rem;padding: .75rem;margin-bottom: .75rem;background: #fff;}
+  .crud-table td {border: 0;padding: .35rem 0;}
+  .crud-table td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: .78rem;
+    font-weight: 700;
+    opacity: .65;
+    margin-bottom: .25rem;
+  }
+  .crud-table input{ width: 20% }
+  .crud-table td.text-end {text-align: left !important;margin-top: .35rem;}
+}
+
+@media (max-width: 768px) {
+  .tarifas-table td[data-label="Activo"],
+  .tarifas-table td[data-label="Acciones"] {text-align: center !important;}
+}
+/* ====================== PERÍODOS DE VIGENCIA ===================== */
+.vigencias-table {table-layout: fixed;}
+
+@media (min-width: 992px) {
+  .vigencias-table th:nth-child(1),
+  .vigencias-table td:nth-child(1) { width: 26%; } /* Empresa */
+  .vigencias-table th:nth-child(2),
+  .vigencias-table td:nth-child(2) { width: 26%; } /* Vigencia */
+  .vigencias-table th:nth-child(3),
+  .vigencias-table td:nth-child(3) { width: 34%; } /* Descripción */
+  .vigencias-table th:nth-child(4),
+  .vigencias-table td:nth-child(4) { width: 7%; }  /* Activo */
+  .vigencias-table th:nth-child(5),
+  .vigencias-table td:nth-child(5) { width: 7%; }  /* Guardar */
+}
+@media (max-width: 768px) {
+  .fechas-wrap {flex-direction: column;}
+  .vigencias-table td.text-center,
+  .vigencias-table td.text-end {text-align: center !important;}
+}
+
+/*===================== CONTROL DE ACCESO ===================*/
+@media (max-width: 576px){
+  .tabla-restricciones thead { display: none; }
+  .tabla-restricciones tbody tr{
+    display:block;
+    border:1px solid rgba(15,23,42,0.08);
+    border-radius:14px;
+    padding:12px;
+    margin-bottom:10px;
+  }
+  .tabla-restricciones tbody td{
+    display:block;
+    padding:6px 0;
+    border:0 !important;
+    white-space: normal !important;
+  }
+  .tabla-restricciones tbody td.text-end{text-align:left !important;margin-top:8px;}
+}
+
+/* ---- Modal scroll interno (móvil-friendly) ---- */
+.modal-body-scroll{max-height: calc(100vh - 180px);overflow-y: auto;}
+
+@media (max-width: 576px){
+  .modal-dialog{ margin: .5rem; }
+  .modal-body-scroll{ max-height: calc(100vh - 200px); }
+}
+
+.dias-scroll{max-height: 220px;overflow-y: auto;}
+
+
+
+

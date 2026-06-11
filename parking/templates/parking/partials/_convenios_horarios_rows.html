@@ -1,0 +1,49 @@
+{% for r in empresa.restricciones_horarias.all %}
+<tr>
+    <form method="post" class="m-0 p-0">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="editar">
+        <input type="hidden" name="restriccion_id" value="{{ r.id }}">
+        <td style="min-width: 140px;">
+            <select name="dia_semana" class="form-select form-select-sm">
+                <option value="LUNES" {% if r.dia_semana == "LUNES" %}selected{% endif %}>Lunes</option>
+                <option value="MARTES" {% if r.dia_semana == "MARTES" %}selected{% endif %}>Martes</option>
+                <option value="MIERCOLES" {% if r.dia_semana == "MIERCOLES" %}selected{% endif %}>Miércoles</option>
+                <option value="JUEVES" {% if r.dia_semana == "JUEVES" %}selected{% endif %}>Jueves</option>
+                <option value="VIERNES" {% if r.dia_semana == "VIERNES" %}selected{% endif %}>Viernes</option>
+                <option value="SABADO" {% if r.dia_semana == "SABADO" %}selected{% endif %}>Sábado</option>
+                <option value="DOMINGO" {% if r.dia_semana == "DOMINGO" %}selected{% endif %}>Domingo</option>
+            </select>
+        </td>
+        <td style="min-width: 220px;">
+            <div class="d-flex gap-1">
+                <input type="time"
+                       name="hora_inicio"
+                       value="{{ r.hora_inicio|time:'H:i' }}"
+                       class="form-control form-control-sm">
+                <span class="align-self-center">a</span>
+                <input type="time"
+                       name="hora_fin"
+                       value="{{ r.hora_fin|time:'H:i' }}"
+                       class="form-control form-control-sm">
+            </div>
+        </td>
+        <td class="text-end">
+            <div class="btn-group btn-group-sm">
+                <button type="button"
+                        class="btn btn-outline-danger btn-delete-horario"
+                        data-id="{{ r.id }}"
+                        title="Eliminar horario">
+                    <i class="bi bi-trash">Borrar</i>
+                </button>
+            </div>
+        </td>
+    </form>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="3" class="text-center text-muted py-3">
+        No hay restricciones horarias para esta empresa.
+    </td>
+</tr>
+{% endfor %}

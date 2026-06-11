@@ -1,0 +1,649 @@
+{# parking/templates/parking/tarifas/tarifas_base_dia_noche.html #}
+{% extends "parking/base.html" %}
+{% load static %}
+
+{% block title %}Tarifas Base · Día / Noche{% endblock %}
+{% block page_title %}Tarifas Base · Día / Noche{% endblock %}
+
+{% block content %}
+<div class="card" style="border-radius:16px; border:none; box-shadow:0 12px 30px rgba(15,23,42,0.05);">
+  <div class="card-header bg-white d-flex flex-column align-items-start gap-2 small">
+  <div>
+    <h6 class="mb-0">Tarifa base</h6>
+    <div class="text-muted small">Registra y edita tarifas base diarias y nocturnas.</div>
+  </div>
+
+  <button class="btn btn-sm btn-primary w-100 py-2 w-md-auto"
+          data-bs-toggle="modal"
+          data-bs-target="#modalNuevaTarifaBase">
+    <i class="bi bi-plus-circle"></i> Nueva tarifa
+  </button>
+</div>
+<div class="mb-3">
+  <div class="input-group">
+    <input id="searchTarifas" type="text" class="form-control"
+           placeholder="Buscar por tipo o modo...">
+    <button class="btn btn-outline-secondary" type="button" id="btnSearchTarifas" aria-label="Buscar">
+      <i class="bi bi-search"></i>
+    </button>
+  </div>
+</div>
+
+
+
+  <div class="card-body small">
+
+    <table class="table table-hover table-sm align-middle form-table">
+      <thead class="table-light">
+        <tr>
+          <th style="width:34%;">Tipo</th>
+          <th style="width:12%;">Vehículo</th>
+          <th style="width:16%;">Precio</th>
+          <th style="width:4%;" class="text-end">Estado</th>
+          <th style="width:4%;" class="text-end">Guardar</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {# ========================= DIARIAS ========================= #}
+        {% for t in diarias %}
+        <tr data-kind="DIARIA" data-id="{{ t.id }}">
+          <!-- <td>
+            <input class="form-control form-control-sm inline"
+                   data-field="nombre"
+                   value="{{ t.nombre|default:'' }}"
+                   placeholder="Tarifa base">
+            <div class="text-muted small mt-1">Tarifa base</div>
+          </td> -->
+
+          <td>
+            <select class="form-select form-select-sm inline " disabled>
+              <option selected>Diaria</option>
+            </select>
+            <div class="text-muted small mt-1">Diaria</div>
+          </td>
+
+          <td>
+            <select class="form-select form-select-sm inline" data-field="tipo_vehiculo">
+              <option value="CARRO" {% if t.tipo_vehiculo == "CARRO" %}selected{% endif %}>Carro</option>
+              <option value="MOTO" {% if t.tipo_vehiculo == "MOTO" %}selected{% endif %}>Moto</option>
+              <option value="CAMIONETA" {% if t.tipo_vehiculo == "CAMIONETA" %}selected{% endif %}>Camioneta</option>
+              <option value="OTRO" {% if t.tipo_vehiculo == "OTRO" %}selected{% endif %}>Otro</option>
+            </select>
+            <div class="text-muted small mt-1">Tipo de vehículo</div>
+          </td>
+
+          
+
+          <!-- <td>
+            <div class="d-flex gap-2 flex-wrap">
+              <div style="min-width:170px;">
+                <select class="form-select form-select-sm inline" data-field="modo_diaria">
+                  <option value="CALENDARIO" {% if t.modo_diaria == "CALENDARIO" %}selected{% endif %}>Calendario</option>
+                  <option value="24H" {% if t.modo_diaria == "24H" %}selected{% endif %}>Cada 24h</option>
+                </select>
+
+              </div>
+
+              <div class="js-corte-wrap {% if t.modo_diaria != 'CALENDARIO' %}d-none{% endif %}" style="min-width:150px;">
+                <input type="time"
+                       class="form-control form-control-sm inline"
+                       data-field="hora_corte"
+                       value="{% if t.hora_corte %}{{ t.hora_corte|time:'H:i' }}{% endif %}">
+                <div class="text-muted small mt-1">Hora corte</div>
+              </div>
+
+              <div class="js-corte-off {% if t.modo_diaria == 'CALENDARIO' %}d-none{% endif %} text-muted small align-self-center">
+                (Sin corte)
+              </div>
+            </div>
+
+            <div class="text-muted small mt-2">
+              Recomendación: <b>Calendario</b> si cobras “por día” con corte (ej: 00:00). <b>Cada 24h</b> si cobras por periodos exactos.
+            </div>
+          </td> -->
+
+          <td>
+            <input type="number" min="0"
+                   class="form-control form-control-sm inline"
+                   data-field="precio_dia"
+                   value="{{ t.precio_dia|default:'0' }}"
+                   placeholder="$ día">
+            <div class="text-muted small mt-1">Precio día</div>
+          </td>
+
+          <td class="text-end">
+            <div class="form-check form-switch d-inline-flex align-items-center justify-content-end">
+              <input class="form-check-input activo-switch" type="checkbox" {% if t.activo %}checked{% endif %}>
+              <span class="small ms-2 estado-text">{% if t.activo %}Activo{% else %}Inactivo{% endif %}</span>
+            </div>
+          </td>
+
+          <td class="text-end">
+            <button type="button" class="btn btn-sm btn-outline-primary save-row" title="Guardar fila">
+              <i class="bi bi-save"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+
+        {# ========================= NOCTURNAS ========================= #}
+        {% for n in nocturnas %}
+        <tr data-kind="NOCTURNA" data-id="{{ n.id }}">
+          <!-- <td>
+            <input class="form-control form-control-sm inline"
+                   data-field="nombre"
+                   value="{{ n.nombre|default:'' }}"
+                   placeholder="Tarifa base">
+            <div class="text-muted small mt-1">Tarifa base</div>
+          </td> -->
+
+          <td>
+            <select class="form-select form-select-sm inline js-kind-select" data-field="__kind_readonly" disabled>
+              <option selected>Nocturna</option>
+            </select>
+            <div class="text-muted small mt-1">Nocturna</div>
+          </td>
+
+          <td>
+            <select class="form-select form-select-sm inline" data-field="tipo_vehiculo">
+              <option value="CARRO" {% if n.tipo_vehiculo == "CARRO" %}selected{% endif %}>Carro</option>
+              <option value="MOTO" {% if n.tipo_vehiculo == "MOTO" %}selected{% endif %}>Moto</option>
+              <option value="CAMIONETA" {% if n.tipo_vehiculo == "CAMIONETA" %}selected{% endif %}>Camioneta</option>
+              <option value="OTRO" {% if n.tipo_vehiculo == "OTRO" %}selected{% endif %}>Otro</option>
+            </select>
+            <div class="text-muted small mt-1">Tipo de vehículo</div>
+          </td>
+
+
+
+          <!-- <td>
+            <div class="d-flex gap-2 flex-wrap">
+              <div style="min-width:140px;">
+                <input type="time"
+                       class="form-control form-control-sm inline"
+                       data-field="hora_inicio"
+                       value="{% if n.hora_inicio %}{{ n.hora_inicio|time:'H:i' }}{% endif %}">
+                <div class="text-muted small mt-1">Inicio</div>
+              </div>
+
+              <div style="min-width:140px;">
+                <input type="time"
+                       class="form-control form-control-sm inline"
+                       data-field="hora_fin"
+                       value="{% if n.hora_fin %}{{ n.hora_fin|time:'H:i' }}{% endif %}">
+                <div class="text-muted small mt-1">Fin</div>
+              </div>
+
+              <div style="min-width:160px;">
+                <select class="form-select form-select-sm inline" data-field="modo">
+                  <option value="HORA" {% if n.modo == "HORA" %}selected{% endif %}>Hora</option>
+                  <option value="FRACCION" {% if n.modo == "FRACCION" %}selected{% endif %}>Fracción</option>
+                </select>
+                <div class="text-muted small mt-1">Cobro</div>
+              </div>
+
+              <div style="min-width:130px;">
+                <input type="number" min="0"
+                       class="form-control form-control-sm inline"
+                       data-field="minimo_minutos"
+                       value="{{ n.minimo_minutos }}"
+                       placeholder="0">
+                <div class="text-muted small mt-1">Mín (min)</div>
+              </div>
+
+              <div style="min-width:140px;">
+                <select class="form-select form-select-sm inline" data-field="redondeo">
+                  <option value="ARRIBA" {% if n.redondeo == "ARRIBA" %}selected{% endif %}>Arriba</option>
+                  <option value="EXACTO" {% if n.redondeo == "EXACTO" %}selected{% endif %}>Exacto</option>
+                </select>
+                <div class="text-muted small mt-1">Redondeo</div>
+              </div>
+            </div>
+
+            <div class="text-muted small mt-2">
+              Recomendación: define un rango típico (ej: 18:00 → 06:00). Si cruza medianoche, está bien.
+            </div>
+          </td> -->
+
+          <td>
+            <!-- HORA -->
+            <div class="price-hora {% if n.modo != 'HORA' %}d-none{% endif %}">
+              <input type="number" min="0"
+                     class="form-control form-control-sm inline"
+                     data-field="precio_hora"
+                     value="{{ n.precio_hora|default:'' }}"
+                     placeholder="$ hora">
+              <div class="text-muted small mt-1">Precio hora</div>
+            </div>
+
+            <!-- FRACCIÓN -->
+            <div class="price-fraccion {% if n.modo != 'FRACCION' %}d-none{% endif %}">
+              <div class="d-flex gap-2">
+                <input type="number" min="1"
+                       class="form-control form-control-sm inline"
+                       data-field="tamano_fraccion_min"
+                       value="{{ n.tamano_fraccion_min|default:'' }}"
+                       placeholder="min">
+                <input type="number" min="0"
+                       class="form-control form-control-sm inline"
+                       data-field="precio_fraccion"
+                       value="{{ n.precio_fraccion|default:'' }}"
+                       placeholder="$">
+              </div>
+              <div class="text-muted small mt-1">Fracción</div>
+            </div>
+          </td>
+
+          <td class="text-end">
+            <div class="form-check form-switch d-inline-flex align-items-center justify-content-end">
+              <input class="form-check-input activo-switch" type="checkbox" {% if n.activo %}checked{% endif %}>
+              <span class="small ms-2 estado-text">{% if n.activo %}Activo{% else %}Inactivo{% endif %}</span>
+            </div>
+          </td>
+
+          <td class="text-end">
+            <button type="button" class="btn btn-sm btn-outline-primary save-row" title="Guardar fila">
+              <i class="bi bi-save"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+
+        {% if diarias|length == 0 and nocturnas|length == 0 %}
+        <tr>
+          <td colspan="7" class="text-center text-muted py-4">
+            Aún no hay tarifas base. Crea la primera con “Nueva tarifa”.
+          </td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===================== MODAL CREAR (DIARIA / NOCTURNA) ===================== -->
+<div class="modal fade" id="modalNuevaTarifaBase" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content" style="border-radius:16px;">
+      <form method="post">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title">Nueva tarifa base</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Tipo</label>
+              <select id="modalTipo" class="form-select">
+                <option value="DIARIA">Diaria</option>
+                <option value="NOCTURNA">Nocturna</option>
+              </select>
+            </div>
+
+            <!-- Para que la vista sepa qué form procesar -->
+            <input type="hidden" name="kind" id="modalKindHidden" value="dia">
+
+            <!-- ===== FORM DIARIA ===== -->
+            <div class="js-form-dia">
+              <div class="row g-3">
+                <div class="col-12">
+                  <!-- <label class="form-label">Nombre</label> -->
+                  {{ form_diaria.nombre }}
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label">Vehículo</label>
+                  {{ form_diaria.tipo_vehiculo }}
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label">Modo</label>
+                  {{ form_diaria.modo_diaria }}
+                </div>
+
+                <div class="col-md-4 js-dia-corte">
+                  <label class="form-label">Hora corte</label>
+                  {{ form_diaria.hora_corte }}
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label">Precio día</label>
+                  {{ form_diaria.precio_dia }}
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label d-block">Activo</label>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="dia-activo" id="dia_activo" checked>
+                    <label class="form-check-label" for="dia_activo">Disponible</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== FORM NOCTURNA ===== -->
+            <div class="js-form-noche d-none">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label">Nombre</label>
+                  {{ form_nocturna.nombre }}
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label">Vehículo</label>
+                  {{ form_nocturna.tipo_vehiculo }}
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label">Inicio</label>
+                  {{ form_nocturna.hora_inicio }}
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label">Fin</label>
+                  {{ form_nocturna.hora_fin }}
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label">Cobro</label>
+                  {{ form_nocturna.modo }}
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label">Mínimo (min)</label>
+                  {{ form_nocturna.minimo_minutos }}
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label">Redondeo</label>
+                  {{ form_nocturna.redondeo }}
+                </div>
+
+                <div class="col-md-4 js-noche-hora">
+                  <label class="form-label">Precio hora</label>
+                  {{ form_nocturna.precio_hora }}
+                </div>
+
+                <div class="col-md-4 js-noche-frac d-none">
+                  <label class="form-label">Tamaño fracción (min)</label>
+                  {{ form_nocturna.tamano_fraccion_min }}
+                </div>
+
+                <div class="col-md-4 js-noche-frac d-none">
+                  <label class="form-label">Precio fracción</label>
+                  {{ form_nocturna.precio_fraccion }}
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label d-block">Activo</label>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="noche-activo" id="noche_activo" checked>
+                    <label class="form-check-label" for="noche_activo">Disponible</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {% if form_diaria.errors or form_nocturna.errors %}
+              <div class="col-12">
+                <div class="alert alert-danger py-2 mb-0">
+                  {{ form_diaria.errors }}
+                  {{ form_nocturna.errors }}
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Crear</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // CSRF
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  const csrftoken = getCookie('csrftoken');
+
+  function flashOk(el){ el.classList.add("table-success"); setTimeout(()=>el.classList.remove("table-success"), 500); }
+  function flashBad(el){ el.classList.add("table-danger"); setTimeout(()=>el.classList.remove("table-danger"), 900); }
+
+  // URLs base (Django)
+  const URLS = {
+    DIARIA: {
+      inline: `{% url "tarifa_base_diaria_inline_update" 0 %}`,
+      toggle: `{% url "tarifa_base_diaria_toggle" 0 %}`,
+    },
+    NOCTURNA: {
+      inline: `{% url "tarifa_base_nocturna_inline_update" 0 %}`,
+      toggle: `{% url "tarifa_base_nocturna_toggle" 0 %}`,
+    }
+  };
+
+  function urlFor(kind, action, id){
+    return URLS[kind][action].replace("/0/", `/${id}/`);
+  }
+
+  async function inlineSave(rowEl, field, value) {
+    const kind = rowEl.dataset.kind;
+    const id = rowEl.dataset.id;
+    const url = urlFor(kind, "inline", id);
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {"Content-Type":"application/json","X-CSRFToken": csrftoken},
+      body: JSON.stringify({field, value}),
+    });
+
+    if (!res.ok) { flashBad(rowEl); return false; }
+    flashOk(rowEl); return true;
+  }
+
+  async function toggleActivo(rowEl, activo) {
+    const kind = rowEl.dataset.kind;
+    const id = rowEl.dataset.id;
+    const url = urlFor(kind, "toggle", id);
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {"Content-Type":"application/json","X-CSRFToken": csrftoken},
+      body: JSON.stringify({activo}),
+    });
+
+    if (!res.ok) { flashBad(rowEl); return false; }
+    flashOk(rowEl); return true;
+  }
+
+  async function saveAllFields(rowEl) {
+    const fields = rowEl.querySelectorAll(".inline");
+    for (const el of fields) {
+      const field = el.dataset.field;
+      if (!field || field.startsWith("__")) continue;
+      const value = (el.tagName === "SELECT") ? el.value : el.value;
+      const ok = await inlineSave(rowEl, field, value);
+      if (!ok) return false;
+    }
+    return true;
+  }
+
+  // ====== Reglas UI por tipo ======
+  function syncDiariaRow(rowEl){
+    const modoEl = rowEl.querySelector('[data-field="modo_diaria"]');
+    if (!modoEl) return;
+    const modo = modoEl.value;
+
+    const corteWrap = rowEl.querySelector(".js-corte-wrap");
+    const corteOff = rowEl.querySelector(".js-corte-off");
+    if (corteWrap) corteWrap.classList.toggle("d-none", modo !== "CALENDARIO");
+    if (corteOff) corteOff.classList.toggle("d-none", modo === "CALENDARIO");
+
+    if (modo !== "CALENDARIO") {
+      const hc = rowEl.querySelector('[data-field="hora_corte"]');
+      if (hc) hc.value = "";
+    }
+  }
+
+  function syncNocturnaRow(rowEl){
+    const modoEl = rowEl.querySelector('[data-field="modo"]');
+    if (!modoEl) return;
+    const modo = modoEl.value;
+
+    const horaBlock = rowEl.querySelector(".price-hora");
+    const fracBlock = rowEl.querySelector(".price-fraccion");
+    if (horaBlock) horaBlock.classList.toggle("d-none", modo !== "HORA");
+    if (fracBlock) fracBlock.classList.toggle("d-none", modo !== "FRACCION");
+
+    if (modo === "HORA") {
+      const fm = rowEl.querySelector('[data-field="tamano_fraccion_min"]');
+      const pf = rowEl.querySelector('[data-field="precio_fraccion"]');
+      if (fm) fm.value = "";
+      if (pf) pf.value = "";
+    } else {
+      const ph = rowEl.querySelector('[data-field="precio_hora"]');
+      if (ph) ph.value = "";
+    }
+  }
+
+  // ====== Auto guardar ======
+  document.querySelectorAll("tr[data-id] .inline").forEach(el => {
+    const row = el.closest("tr[data-id]");
+    const field = el.dataset.field;
+
+    const handler = async () => {
+      const value = (el.tagName === "SELECT") ? el.value : el.value;
+
+      // sync UI
+      if (row.dataset.kind === "DIARIA" && field === "modo_diaria") syncDiariaRow(row);
+      if (row.dataset.kind === "NOCTURNA" && field === "modo") syncNocturnaRow(row);
+
+      if (!field || field.startsWith("__")) return;
+      await inlineSave(row, field, value);
+    };
+
+    el.addEventListener("change", handler);
+    el.addEventListener("blur", handler);
+  });
+
+  // ====== Switch activo ======
+  document.querySelectorAll("tr[data-id] .activo-switch").forEach(sw => {
+    sw.addEventListener("change", async () => {
+      const row = sw.closest("tr[data-id]");
+      const ok = await toggleActivo(row, sw.checked);
+      if (!ok) { sw.checked = !sw.checked; return; }
+      const label = row.querySelector(".estado-text");
+      if (label) label.textContent = sw.checked ? "Activo" : "Inactivo";
+    });
+  });
+
+  // ====== Guardar fila ======
+  document.querySelectorAll("tr[data-id] .save-row").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const row = btn.closest("tr[data-id]");
+      const original = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = "Guardando...";
+      const ok = await saveAllFields(row);
+      btn.disabled = false;
+      btn.innerHTML = ok ? "Guardado" : original;
+      setTimeout(() => { btn.innerHTML = original; }, 900);
+    });
+  });
+
+  // ====== Filtro por buscador + tipo ======
+    const searchEl = document.getElementById("searchTarifas");
+    const btnSearch = document.getElementById("btnSearchTarifas");
+
+    function applyFilters(){
+      const q = (searchEl.value || "").trim().toLowerCase();
+      document.querySelectorAll("tr[data-id]").forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = (!q || text.includes(q)) ? "" : "none";
+      });
+    }
+
+    searchEl?.addEventListener("input", applyFilters);
+    btnSearch?.addEventListener("click", applyFilters);
+
+
+  // Inicializa filas
+  document.querySelectorAll("tr[data-id]").forEach(row => {
+    if (row.dataset.kind === "DIARIA") syncDiariaRow(row);
+    if (row.dataset.kind === "NOCTURNA") syncNocturnaRow(row);
+  });
+
+  // ====== Modal: cambiar tipo y mostrar el form correcto ======
+  const modalTipo = document.getElementById("modalTipo");
+  const modalKindHidden = document.getElementById("modalKindHidden");
+  const formDia = document.querySelector(".js-form-dia");
+  const formNoche = document.querySelector(".js-form-noche");
+
+  function syncModalTipo(){
+    const v = modalTipo.value; // DIARIA / NOCTURNA
+    if (v === "DIARIA") {
+      modalKindHidden.value = "dia";
+      formDia.classList.remove("d-none");
+      formNoche.classList.add("d-none");
+    } else {
+      modalKindHidden.value = "noche";
+      formDia.classList.add("d-none");
+      formNoche.classList.remove("d-none");
+    }
+  }
+  modalTipo?.addEventListener("change", syncModalTipo);
+  syncModalTipo();
+
+  // Modal: diaria (hora_corte según modo)
+  function syncModalDiaria(){
+    const modo = document.getElementById("id_dia-modo_diaria")?.value;
+    const corte = document.querySelector(".js-dia-corte");
+    if (!corte) return;
+    corte.style.display = (modo === "CALENDARIO") ? "" : "none";
+    if (modo !== "CALENDARIO") {
+      const hc = document.getElementById("id_dia-hora_corte");
+      if (hc) hc.value = "";
+    }
+  }
+  document.getElementById("id_dia-modo_diaria")?.addEventListener("change", syncModalDiaria);
+  syncModalDiaria();
+
+  // Modal: nocturna (hora/fracción según modo)
+  function syncModalNocturna(){
+    const modo = document.getElementById("id_noche-modo")?.value;
+    document.querySelectorAll(".js-noche-hora").forEach(x => x.style.display = (modo === "HORA") ? "" : "none");
+    document.querySelectorAll(".js-noche-frac").forEach(x => x.classList.toggle("d-none", modo !== "FRACCION"));
+    if (modo === "HORA") {
+      const fm = document.getElementById("id_noche-tamano_fraccion_min");
+      const pf = document.getElementById("id_noche-precio_fraccion");
+      if (fm) fm.value = "";
+      if (pf) pf.value = "";
+    } else {
+      const ph = document.getElementById("id_noche-precio_hora");
+      if (ph) ph.value = "";
+    }
+  }
+  document.getElementById("id_noche-modo")?.addEventListener("change", syncModalNocturna);
+  syncModalNocturna();
+
+  // Nota: si tus forms NO usan prefix "dia"/"noche", cambia los ids arriba.
+</script>
+{% endblock %}

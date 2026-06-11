@@ -1,0 +1,190 @@
+{% extends "parking/base.html" %}
+
+{% block title %}Gestión de Convenios · Empresas{% endblock %}
+
+{% block page_title %}
+Gestión de Convenios · Empresas en convenio
+{% endblock %}
+
+{% block content %}
+<div class="card" style="border-radius:16px; border:none; box-shadow:0 12px 30px rgba(15,23,42,0.05);">
+    <div class="card-header bg-white d-flex flex-column align-items-start gap-2 small">
+        <div>
+            <h6 class="mb-0">Empresas en convenio</h6>
+            <small class="text-muted">
+                Registra y edita empresas aliadas que ofrecen beneficios a los usuarios del parqueadero.
+            </small>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-primary w-100 w-md-auto py-2"
+                data-bs-toggle="modal"
+                data-bs-target="#modalNuevaEmpresaConvenio">
+                <i class="bi bi-building-add"></i> Nueva empresa
+            </button>
+        </div>
+    </div>
+    <div class="card-body small">
+        <!-- Buscador -->
+        <form method="get" class="mb-3">
+            <div class="input-group input-group-sm">
+                <input type="text"
+                       name="q"
+                       value="{{ query }}"
+                       class="form-control"
+                       placeholder="Buscar por empresa, NIT o correo...">
+                <button class="btn btn-outline-secondary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+        <!-- Tabla CRUD inline -->
+        <div class="table-responsive table-no-scroll">
+            <table class="table table-hover table-sm align-middle responsive-table form-table empresas-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>Empresa</th>
+                        <th>NIT</th>
+                        <th>Dirección</th>
+                        <th>Teléfono</th>
+                        <th>Correo electrónico</th>
+                        <th>Activo</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in convenios %}
+                    <tr>
+                        <form method="post" class="m-0 p-0">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="editar">
+                            <input type="hidden" name="convenio_id" value="{{ c.id }}">
+
+                            <!-- Empresa -->
+                            <td data-label="Empresa">
+                                <input type="text"
+                                    name="empresa"
+                                    value="{{ c.empresa }}"
+                                    class="form-control form-control-sm"
+                                    placeholder="Nombre de la empresa">
+                            </td>
+                            <!-- NIT -->
+                            <td data-label="NIT">
+                                <input type="text"
+                                    name="nit"
+                                    value="{{ c.nit }}"
+                                    class="form-control form-control-sm">
+                            </td>
+                            <!-- Dirección -->
+                            <td data-label="Dirección">
+                                <input type="text"
+                                    name="direccion"
+                                    value="{{ c.direccion }}"
+                                    class="form-control form-control-sm">
+                            </td>
+                            <!-- Teléfono -->
+                            <td data-label="Teléfono">
+                                <input type="text"
+                                    name="telefono"
+                                    value="{{ c.telefono }}"
+                                    class="form-control form-control-sm">
+                            </td>
+                            <!-- Correo -->
+                            <td data-label="Correo electrónico">
+                                <input type="email"
+                                    name="email"
+                                    value="{{ c.email }}"
+                                    class="form-control form-control-sm">
+                            </td>
+                            <!-- Activo -->
+                            <td data-label="Estado">
+                                <div class="form-check form-switch d-inline-flex align-items-center">
+                                    <input  class="form-check-input"
+                                            type="checkbox"
+                                            name="activo"
+                                            value="1"
+                                            {% if c.activo %}checked{% endif %}>
+                                    <span class="small ms-2">
+                                        {% if c.activo %}Activo{% else %}Inactivo{% endif %}
+                                    </span>
+                                </div>
+                            </td>
+                            <!-- Guardar -->
+                            <td data-label="Acciones" class="text-end">
+                                <button type="submit" class="btn btn-sm btn-outline-primary w-100 w-md-auto">
+                                    <i class="bi bi-save"></i> <span class="d-inline d-md-none">Guardar</span>
+                                </button>
+                            </td>
+                        </form>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            No hay empresas en convenio registradas.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- MODAL NUEVA EMPRESA EN CONVENIO -->
+<div class="modal fade" id="modalNuevaEmpresaConvenio" tabindex="-1" aria-labelledby="modalNuevaEmpresaConvenioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius:18px;">
+            <div class="modal-header">
+                <h5 class="modal-title small" id="modalNuevaEmpresaConvenioLabel">
+                    Registrar nueva empresa en convenio
+                </h5>
+                <button type="button" 
+                        class="btn-close" 
+                        data-bs-dismiss="modal" 
+                        aria-label="Cerrar">
+                </button>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="crear">
+                <div class="modal-body small">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre de la empresa</label>
+                            {{ form.empresa }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">NIT</label>
+                            {{ form.nit }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Dirección</label>
+                            {{ form.direccion }}
+                        </div>
+                        <div class="col-12 col-md-3">
+                          <label class="form-label">Teléfono</label>
+                          {{ form.telefono }}
+                        </div>
+                        <div class="col-12 col-md-3">
+                          <label class="form-label">Correo electrónico</label>
+                          {{ form.email }}
+                        </div>
+                        <div class="col-12 d-flex align-items-center mt-2">
+                            <div class="form-check">
+                                {{ form.activo }}
+                                <label class="form-check-label ms-1">Activo</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex flex-column flex-md-row gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary w-100 w-md-auto" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-sm btn-primary w-100 w-md-auto">
+                        <i class="bi bi-check-lg"></i> Guardar empresa
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

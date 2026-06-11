@@ -1,0 +1,271 @@
+{# parking/convenios_control_limites.html #}
+{% extends "parking/base.html" %}
+
+{% block title %}Gestión de Convenios · Límites y restricciones{% endblock %}
+
+{% block page_title %}
+Gestión de Convenios · Límites y restricciones
+{% endblock %}
+
+{% block content %}
+<div class="card" style="border-radius:16px; border:none; box-shadow:0 12px 30px rgba(15,23,42,0.05);">
+    <div class="card-header bg-white d-flex flex-column align-items-start gap-2 small">
+        <div>
+            <h6 class="mb-0">Límites y restricciones por empresa en convenio</h6>
+            <small class="text-muted">
+                Configura cupos máximos, tipos de vehículo permitidos y días especiales por empresa.
+            </small>
+        </div>
+        <div>
+            <a href="{% url 'convenios_empresas_registrar' %}"
+               class="btn btn-sm btn-primary w-100 py-2 w-md-auto">
+               <i class="bi bi-building-add"></i> Nueva empresa
+            </a>
+        </div>
+    </div>
+    <div class="card-body small">
+        <!-- Buscador -->
+        <form method="get" class="mb-3">
+            <div class="input-group input-group-sm">
+                <input type="text"
+                       name="q"
+                       value="{{ query }}"
+                       class="form-control"
+                       placeholder="Buscar por empresa o NIT...">
+                <button class="btn btn-outline-secondary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+        <!-- Mensajes -->
+        {% if messages %}
+            <div class="mb-2">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} py-1 px-2 mb-1 small">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <!-- Tabla -->
+        <div class="table-responsive table-no-scroll">
+            <table class="table table-hover table-sm align-middle responsive-table chips-table limits-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Resumen de límites</th>
+                        <th>Restricciones</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e, form_limites in items %}
+                    {% with limites=form_limites.instance %}
+                    <tr>
+                        <td data-label="Empresa">
+                            <strong>{{ e.empresa }}</strong>
+                            {% if e.nit %}
+                                <br><span class="text-muted small">{{ e.nit }}</span>
+                            {% endif %}
+                        </td>
+                        <td data-label="Resumen de límites">
+                            <div class="chips-wrap">
+                                <span class="badge bg-light text-dark border me-1 mb-1 chip">
+                                    Cupo simultáneo:
+                                    {% if limites.max_vehiculos_simultaneos %}{{ limites.max_vehiculos_simultaneos }}{% else %}Ilimitado{% endif %}
+                                </span>
+                                <span class="badge bg-light text-dark border me-1 mb-1 chip">
+                                    Máx/día:
+                                    {% if limites.max_ingresos_dia %}{{ limites.max_ingresos_dia }}{% else %}Sin tope{% endif %}
+                                </span>
+                                <span class="badge bg-light text-dark border me-1 mb-1 chip">
+                                    Máx/mes:
+                                    {% if limites.max_ingresos_mes %}{{ limites.max_ingresos_mes }}{% else %}Sin tope{% endif %}
+                                </span>
+                                <span class="badge bg-light text-dark border me-1 mb-1 chip">
+                                    Horas x ingreso:
+                                    {% if limites.max_horas_por_ingreso %}{{ limites.max_horas_por_ingreso }}{% else %}Sin límite{% endif %}
+                                </span>
+                            </div>
+                        </td>
+                        <td data-label="Restricciones">
+                            <div class="chips-wrap">
+                                <span class="badge bg-light text-dark border me-1 mb-1 chip">
+                                    Vehículos:
+                                    {% if limites.permitir_carros %}Carros{% endif %}
+                                    {% if limites.permitir_motos %}{% if limites.permitir_carros %}, {% endif %}Motos{% endif %}
+                                    {% if limites.permitir_bicicletas %}{% if limites.permitir_carros or limites.permitir_motos %}, {% endif %}Bicis{% endif %}
+                                </span>
+                                <span class="badge bg-light text-dark border me-1 mb-1 chip">
+                                    {% if limites.aplica_fines_semana %}Aplica fines de semana{% else %}No aplica fines de semana{% endif %}
+                                </span>
+                                <span class="badge bg-light text-dark border me-1 mb-1 chip">
+                                    {% if limites.aplica_festivos %}Aplica festivos{% else %}No aplica festivos{% endif %}
+                                </span>
+                            </div>
+                        </td>
+                        <td data-label="Acciones" class="text-end">
+                            <button class="btn btn-sm btn-outline-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalLimites{{ e.id }}">
+                                <i class="bi bi-sliders"></i> Configurar límites
+                            </button>
+                        </td>
+                    </tr>
+                    {% endwith %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            No hay empresas de convenio registradas.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- ====== MODALES: uno por empresa ====== -->
+{% for e, form_limites in items %}
+<div class="modal fade" id="modalLimites{{ e.id }}" tabindex="-1"
+     aria-labelledby="modalLimites{{ e.id }}Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="empresa_id" value="{{ e.id }}">
+                <div class="modal-header">
+                    <h5 class="modal-title small" id="modalLimites{{ e.id }}Label">
+                        Límites y restricciones · {{ e.empresa }}
+                        {% if e.nit %}<span class="text-muted small">({{ e.nit }})</span>{% endif %}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body modal-body-scroll small">
+                    <div class="table-responsive mb-3 limites-cuantitativos">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th colspan="4">Límites cuantitativos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width: 25%;">
+                                        <label class="form-label small mb-1">
+                                            {{ form_limites.max_vehiculos_simultaneos.label }}
+                                        </label>
+                                        {{ form_limites.max_vehiculos_simultaneos }}
+                                        {% if form_limites.max_vehiculos_simultaneos.help_text %}
+                                            <small class="text-muted d-block">
+                                                {{ form_limites.max_vehiculos_simultaneos.help_text }}
+                                            </small>
+                                        {% endif %}
+                                    </td>
+                                    <td style="width: 25%;">
+                                        <label class="form-label small mb-1">
+                                            {{ form_limites.max_ingresos_dia.label }}
+                                        </label>
+                                        {{ form_limites.max_ingresos_dia }}
+                                        {% if form_limites.max_ingresos_dia.help_text %}
+                                            <small class="text-muted d-block">
+                                                {{ form_limites.max_ingresos_dia.help_text }}
+                                            </small>
+                                        {% endif %}
+                                    </td>
+                                    <td style="width: 25%;">
+                                        <label class="form-label small mb-1">
+                                            {{ form_limites.max_ingresos_mes.label }}
+                                        </label>
+                                        {{ form_limites.max_ingresos_mes }}
+                                        {% if form_limites.max_ingresos_mes.help_text %}
+                                            <small class="text-muted d-block">
+                                                {{ form_limites.max_ingresos_mes.help_text }}
+                                            </small>
+                                        {% endif %}
+                                    </td>
+                                    <td style="width: 25%;">
+                                        <label class="form-label small mb-1">
+                                            {{ form_limites.max_horas_por_ingreso.label }}
+                                        </label>
+                                        {{ form_limites.max_horas_por_ingreso }}
+                                        {% if form_limites.max_horas_por_ingreso.help_text %}
+                                            <small class="text-muted d-block">
+                                                {{ form_limites.max_horas_por_ingreso.help_text }}
+                                            </small>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-responsive mb-2">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 50%;">Tipos de vehículo permitidos</th>
+                                    <th style="width: 50%;">Días especiales</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex flex-wrap gap-3">
+                                            <div class="form-check form-check-inline small">
+                                                {{ form_limites.permitir_carros }}
+                                                <label class="form-check-label">
+                                                    Carros
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-inline small">
+                                                {{ form_limites.permitir_motos }}
+                                                <label class="form-check-label">
+                                                    Motos
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-inline small">
+                                                {{ form_limites.permitir_bicicletas }}
+                                                <label class="form-check-label">
+                                                    Bicicletas
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-wrap gap-3">
+                                            <div class="form-check small">
+                                                {{ form_limites.aplica_fines_semana }}
+                                                <label class="form-check-label">
+                                                    {{ form_limites.aplica_fines_semana.label }}
+                                                </label>
+                                            </div>
+                                            <div class="form-check small">
+                                                {{ form_limites.aplica_festivos }}
+                                                <label class="form-check-label">
+                                                    {{ form_limites.aplica_festivos.label }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-sm btn-secondary"
+                            data-bs-dismiss="modal">
+                            Cancelar
+                    </button>
+                    <button type="submit"
+                            class="btn btn-sm btn-primary">
+                            Guardar cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

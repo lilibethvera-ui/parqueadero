@@ -1,0 +1,210 @@
+{% extends "parking/base.html" %}
+
+{% block title %}Clientes corporativos · Vehículos autorizados{% endblock %}
+
+{% block page_title %}
+Gestión de Clientes · Clientes Corporativos
+{% endblock %}
+
+{% block content %}
+<div class="card" style="border-radius:16px; border:none; box-shadow:0 12px 30px rgba(15,23,42,0.05);">
+    <div class="card-header bg-white d-flex flex-column align-items-start gap-2 small">
+        <div>
+            <h6 class="mb-0">Vehículos autorizados</h6>
+            <small class="text-muted">
+                Vehículos que pueden usar el parqueadero bajo convenio con cada empresa.
+            </small>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-primary w-100 py-2 w-md-auto" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#modalNuevoVehiculo">
+                <i class="bi bi-car-front"></i> Nuevo vehículo
+            </button>
+        </div>
+    </div>
+    <div class="card-body small">
+        <!-- Buscador -->
+        <form method="get" class="mb-3">
+            <div class="input-group input-group-sm">
+                <input type="text"
+                       name="q"
+                       value="{{ query }}"
+                       class="form-control"
+                       placeholder="Buscar por placa o empresa...">
+                <button class="btn btn-outline-secondary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+        <!-- Tabla CRUD -->
+        <div class="table-responsive">
+            <table class="table table-hover table-sm align-top crud-table empresas-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>Placa</th>
+                        <th>Empresa</th>
+                        <th>Contactos autorizados</th>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th>Activo</th>
+                        <th style="width: 70px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in vehiculos %}
+                    <tr>
+                        <form method="post" class="m-0 p-0">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="editar">
+                            <input type="hidden" name="vehiculo_id" value="{{ v.id }}">
+                            <!-- Placa (siempre en mayúsculas) -->
+                            <td data-label="Placa">
+                                <input type="text"
+                                       name="placa"
+                                       value="{{ v.placa }}"
+                                       class="form-control form-control-sm placa-input"
+                                       maxlength="15">
+                            </td>
+                            <!-- Empresa (select) -->
+                            <td data-label="Empresa">
+                                <select name="empresa_id" class="form-select form-select-sm">
+                                    {% for e in empresas %}
+                                        <option value="{{ e.id }}"
+                                                {% if e.id == v.empresa_id %}selected{% endif %}>
+                                            {{ e.razon_social }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <!-- Contactos de esa empresa (automático) -->
+                            <td data-label="Contactos autorizados">
+                                {% if v.empresa.contactos_autorizados.all %}
+                                    {% for c in v.empresa.contactos_autorizados.all %}
+                                        <div class="small">
+                                            {{ c.nombre }} {{ c.apellidos }}
+                                        </div>
+                                    {% empty %}
+                                        <span class="text-muted small">Sin contactos autorizados</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted small">Sin contactos autorizados</span>
+                                {% endif %}
+                            </td>
+                            <!-- Tipo -->
+                            <td data-label="Tipo">
+                                <input type="text"
+                                       name="tipo_vehiculo"
+                                       value="{{ v.tipo_vehiculo }}"
+                                       class="form-control form-control-sm">
+                            </td>
+                            <!-- Descripción -->
+                            <td data-label="Descripción">
+                                <input type="text"
+                                       name="descripcion"
+                                       value="{{ v.descripcion }}"
+                                       class="form-control form-control-sm">
+                            </td>
+                            <!-- Activo -->
+                            <td data-label="Estado">
+                                <div class="form-check form-switch d-inline-flex align-items-center">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           name="activo"
+                                           value="1"
+                                           {% if v.activo %}checked{% endif %}>
+                                    <span class="small ms-2">
+                                        {% if v.activo %}Activo{% else %}Inactivo{% endif %}
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <button type="submit" class="btn btn-sm btn-outline-primary w-100 w-md-auto">
+                                    <i class="bi bi-save"></i> <span class="d-inline d-md-none">Guardar</span>
+                                </button>
+                            </td>
+                        </form>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            No hay vehículos autorizados registrados.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- MODAL NUEVO VEHÍCULO -->
+<div class="modal fade" id="modalNuevoVehiculo" tabindex="-1" aria-labelledby="modalNuevoVehiculoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius:18px;">
+            <div class="modal-header">
+                <h5 class="modal-title small" id="modalNuevoVehiculoLabel">
+                    Registrar nuevo vehículo autorizado
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="crear">
+                <div class="modal-body small">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Empresa</label>
+                            {{ form.empresa }}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Placa</label>
+                            {{ form.placa }}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Tipo de vehículo</label>
+                            {{ form.tipo_vehiculo }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Descripción</label>
+                            {{ form.descripcion }}
+                        </div>
+                        <div class="col-12 d-flex align-items-center mt-2">
+                            <div class="form-check">
+                                {{ form.activo }}
+                                <label class="form-check-label ms-1">Activo</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <small class="text-muted">
+                                Los contactos autorizados de la empresa seleccionada se mostrarán en la tabla
+                                automáticamente.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary"
+                            data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="bi bi-check-lg"></i> Guardar vehículo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- JS: forzar que la placa siempre esté en mayúsculas -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const inputs = document.querySelectorAll('.placa-input');
+    inputs.forEach(function (input) {
+        input.addEventListener('input', function () {
+            this.value = this.value.toUpperCase();
+        });
+    });
+});
+</script>
+{% endblock %}

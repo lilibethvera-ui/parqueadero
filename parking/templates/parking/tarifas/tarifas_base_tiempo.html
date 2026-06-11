@@ -1,0 +1,363 @@
+{% extends "parking/base.html" %}
+{% load static %}
+
+{% block title %}Tarifas Base · Hora o fracción{% endblock %}
+{% block page_title %}Tarifas Base · Hora o fracción{% endblock %}
+
+{% block content %}
+<div class="card" style="border-radius:16px; border:none; box-shadow:0 12px 30px rgba(15,23,42,0.05);">
+  <div class="card-header bg-white d-flex flex-column align-items-start gap-2 small">
+    <div>
+      <h6 class="mb-0">Hora o fracción</h6>
+      <div class="text-muted small">Define la tarifa base por hora o por fracciones.</div>
+    </div>
+    <button class="btn btn-sm btn-primary w-100 py-2 w-md-auto"
+            data-bs-toggle="modal"
+            data-bs-target="#modalNuevaTarifa">
+      <i class="bi bi-cash-coin"></i> Nueva tarifa
+    </button>
+  </div>
+  <div class="card-body small">
+    <!-- ===================== DESKTOP ===================== -->
+    <div class="table-responsive">
+      <table class="table table-hover table-sm align-middle responsive-table form-table">
+        <thead class="table-light">
+          <tr>
+            <th>Nombre</th>
+            <th>Vehículo</th>
+            <th>Modo</th>
+            <th>Configuración</th>
+            <th>Precio</th>
+            <th class="text-end">Acciones</th>
+            <th ></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in tarifas %}
+            <!-- Nombre -->
+          <tr data-id="{{ t.id }}">
+            <td>
+              <input class="form-control form-control-sm inline"
+                     data-field="nombre"
+                     value="{{ t.nombre|default:'' }}">
+              <div class="text-muted small mt-1">Nombre de base</div>
+            </td>
+            <!-- Vehículo -->
+            <td>
+              <select class="form-select form-select-sm inline" data-field="tipo_vehiculo">
+                <option value="CARRO" {% if t.tipo_vehiculo == "CARRO" %}selected{% endif %}>Carro</option>
+                <option value="MOTO" {% if t.tipo_vehiculo == "MOTO" %}selected{% endif %}>Moto</option>
+                <option value="CAMIONETA" {% if t.tipo_vehiculo == "CAMIONETA" %}selected{% endif %}>Camioneta</option>
+                <option value="OTRO" {% if t.tipo_vehiculo == "OTRO" %}selected{% endif %}>Otro</option>
+              </select>
+              <div class="text-muted small mt-1">Tipo de vehículo</div>
+            </td>
+            <!-- Modo -->
+            <td>
+              <select class="form-select form-select-sm inline" data-field="modo">
+                <option value="HORA" {% if t.modo == "HORA" %}selected{% endif %}>Hora</option>
+                <option value="FRACCION" {% if t.modo == "FRACCION" %}selected{% endif %}>Fracción</option>
+              </select>
+              <div class="text-muted small mt-1">Tipo de tarifa</div>
+            </td>
+            <!-- Config -->
+            <td>
+              <div class="d-flex gap-2">
+                <div class="flex-fill">
+                  <input type="number" min="0"
+                         class="form-control form-control-sm inline"
+                         data-field="minimo_minutos"
+                         value="{{ t.minimo_minutos }}">
+                    <div class="text-muted small mb-1">Mín (min)</div>
+                </div>
+                <div class="flex-fill">
+                  <select class="form-select form-select-sm inline" data-field="redondeo">
+                    <option value="ARRIBA" {% if t.redondeo == "ARRIBA" %}selected{% endif %}>Arriba</option>
+                    <option value="EXACTO" {% if t.redondeo == "EXACTO" %}selected{% endif %}>Exacto</option>
+                  </select>
+                  <div class="text-muted small mb-1">Redondeo</div>
+                </div>
+              </div>
+            </td>
+            <!-- Precio (solo según modo) -->
+            <td>
+              <!-- HORA -->
+              <div class="price-hora {% if t.modo != 'HORA' %}d-none{% endif %}">
+                <input type="number" min="0"
+                       class="form-control form-control-sm inline"
+                       data-field="precio_hora"
+                       value="{{ t.precio_hora|default:'' }}"
+                       placeholder="—">
+                       <div class="text-muted small mb-1">Precio hora</div>
+              </div>
+              <!-- FRACCIÓN -->
+              <div class="price-fraccion {% if t.modo != 'FRACCION' %}d-none{% endif %}">
+                <div class="d-flex gap-2">
+                  <input type="number" min="1"
+                         class="form-control form-control-sm inline"
+                         data-field="tamano_fraccion_min"
+                         value="{{ t.tamano_fraccion_min|default:'' }}"
+                         placeholder="min">
+                  <input type="number" min="0"
+                         class="form-control form-control-sm inline"
+                         data-field="precio_fraccion"
+                         value="{{ t.precio_fraccion|default:'' }}"
+                         placeholder="$">
+                </div>
+                <div class="text-muted small mb-1">Fracción</div>
+              </div>
+            </td>
+            <!-- Acciones -->
+            <td data-label="Estado">
+              <div class="form-check form-switch d-inline-flex align-items-center">
+                <input class="form-check-input activo-switch"
+                       type="checkbox"
+                       name="activo"
+                       value="1"
+                       {% if t.activo %}checked{% endif %}>
+                <span class="small ms-2 estado-text">
+                  {% if t.activo %}Activo{% else %}Inactivo{% endif %}
+                </span>
+              </div>
+            </td>
+            <!-- guardar -->
+            <td class="text-end">
+              <button type="button" class="btn btn-sm btn-outline-primary save-row" title="Guardar fila">
+                <i class="bi bi-save"></i><span class="d-inline d-md-none"> Guardar</span>
+              </button>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center text-muted py-4">
+              Aún no hay tarifas. Crea la primera con “Nueva tarifa”.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+<!-- ===================== MODAL CREAR ===================== -->
+<div class="modal fade" id="modalNuevaTarifa" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content" style="border-radius:16px;">
+      <form method="post">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title">Nueva tarifa base</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Nombre</label>
+              {{ form.nombre }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Vehículo</label>
+              {{ form.tipo_vehiculo }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Modo</label>
+              {{ form.modo }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Mínimo (min)</label>
+              {{ form.minimo_minutos }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Redondeo</label>
+              {{ form.redondeo }}
+            </div>
+            <div class="col-md-4 modo-hora">
+              <label class="form-label">Precio por hora</label>
+              {{ form.precio_hora }}
+            </div>
+            <div class="col-md-4 modo-fraccion">
+              <label class="form-label">Tamaño fracción (min)</label>
+              {{ form.tamano_fraccion_min }}
+            </div>
+            <div class="col-md-4 modo-fraccion">
+              <label class="form-label">Precio por fracción</label>
+              {{ form.precio_fraccion }}
+            </div>
+            <div class="col-12">
+              <label class="form-label d-block">Activo</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="activo" id="id_activo" checked>
+                <label class="form-check-label" for="id_activo">Disponible</label>
+              </div>
+            </div>
+            {% if form.errors %}
+              <div class="col-12">
+                <div class="alert alert-danger py-2 mb-0">
+                  {{ form.errors }}
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Crear</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  const csrftoken = getCookie('csrftoken');
+
+  function flashOk(el) {
+    el.classList.add("table-success");
+    setTimeout(() => el.classList.remove("table-success"), 500);
+  }
+  function flashBad(el) {
+    el.classList.add("table-danger");
+    setTimeout(() => el.classList.remove("table-danger"), 900);
+  }
+
+  async function inlineSave(containerEl, field, value) {
+    const id = containerEl.dataset.id;
+    const url = `{% url "tarifa_base_tiempo_inline_update" 0 %}`.replace("/0/", `/${id}/`);
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrftoken,
+      },
+      body: JSON.stringify({ field, value }),
+    });
+
+    if (!res.ok) {
+      flashBad(containerEl);
+      return false;
+    }
+
+    flashOk(containerEl);
+    return true;
+  }
+
+  async function toggleActivo(containerEl, activo) {
+    const id = containerEl.dataset.id;
+    const url = `{% url "tarifa_base_tiempo_toggle" 0 %}`.replace("/0/", `/${id}/`);
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrftoken,
+      },
+      body: JSON.stringify({ activo }),
+    });
+
+    if (!res.ok) {
+      flashBad(containerEl);
+      return false;
+    }
+    flashOk(containerEl);
+    return true;
+  }
+
+  async function saveAllFields(container) {
+    const fields = container.querySelectorAll(".inline");
+    for (const el of fields) {
+      const field = el.dataset.field;
+      const value = (el.tagName === "SELECT") ? el.value : el.value;
+      const ok = await inlineSave(container, field, value);
+      if (!ok) return false;
+    }
+    return true;
+  }
+
+  // Auto-guardar inline (tabla + cards)
+  document.querySelectorAll("[data-id] .inline").forEach(el => {
+    const container = el.closest("[data-id]");
+    const field = el.dataset.field;
+
+    const handler = async () => {
+      const value = (el.tagName === "SELECT") ? el.value : el.value;
+      await inlineSave(container, field, value);
+
+      if (field === "modo") {
+        const modo = el.value;
+
+        // toggle visibilidad
+        const horaBlock = container.querySelector(".price-hora");
+        const fracBlock = container.querySelector(".price-fraccion");
+        if (horaBlock) horaBlock.classList.toggle("d-none", modo !== "HORA");
+        if (fracBlock) fracBlock.classList.toggle("d-none", modo !== "FRACCION");
+
+        // limpiar campos no aplican
+        const precioHora = container.querySelector('[data-field="precio_hora"]');
+        const fracMin = container.querySelector('[data-field="tamano_fraccion_min"]');
+        const precioFrac = container.querySelector('[data-field="precio_fraccion"]');
+
+        if (modo === "HORA") {
+          if (fracMin) fracMin.value = "";
+          if (precioFrac) precioFrac.value = "";
+        } else {
+          if (precioHora) precioHora.value = "";
+        }
+      }
+    };
+
+    el.addEventListener("change", handler);
+    el.addEventListener("blur", handler);
+  });
+
+  // Switch activo
+  document.querySelectorAll("[data-id] .activo-switch").forEach(sw => {
+    sw.addEventListener("change", async () => {
+      const container = sw.closest("[data-id]");
+      const ok = await toggleActivo(container, sw.checked);
+  
+      if (!ok) {
+        sw.checked = !sw.checked;
+        return;
+      }
+  
+      // Actualiza texto sin recargar
+      const label = container.querySelector(".estado-text");
+      if (label) label.textContent = sw.checked ? "Activo" : "Inactivo";
+    });
+  });
+
+  // Botón Guardar
+  document.querySelectorAll("[data-id] .save-row").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const container = btn.closest("[data-id]");
+      const original = btn.innerHTML;
+      btn.disabled = true;
+      const ok = await saveAllFields(container);
+      btn.disabled = false;
+      btn.innerHTML = ok ? "Guardado" : original;
+      setTimeout(() => { btn.innerHTML = original; }, 900);
+    });
+  });
+
+  // Modal show/hide por modo
+  function syncModoModal() {
+    const modo = document.getElementById("id_modo")?.value;
+    document.querySelectorAll(".modo-hora").forEach(x => x.style.display = (modo === "HORA") ? "" : "none");
+    document.querySelectorAll(".modo-fraccion").forEach(x => x.style.display = (modo === "FRACCION") ? "" : "none");
+  }
+  document.getElementById("id_modo")?.addEventListener("change", syncModoModal);
+  syncModoModal();
+</script>
+{% endblock %}

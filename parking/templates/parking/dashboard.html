@@ -1,0 +1,88 @@
+{% extends 'parking/base.html' %}
+
+{% block title %}Dashboard | POS Parqueadero{% endblock %}
+{% block page_title %}Dashboard POS Parqueadero{% endblock %}
+
+{% block subnav %}
+<a href="#" class="subnav-link active">Resumen general</a>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row g-3 mb-3">
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <p class="stat-label">Vehículos en parqueadero</p>
+                <h3 class="stat-value">128</h3>
+                <p class="stat-sub">Capacidad ocupada 64%</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <p class="stat-label">Entradas hoy</p>
+                <h3 class="stat-value">53</h3>
+                <p class="stat-sub text-success">+8 vs ayer</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <p class="stat-label">Salidas hoy</p>
+                <h3 class="stat-value">41</h3>
+                <p class="stat-sub text-danger">-3 vs ayer</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <p class="stat-label">Recaudo del día</p>
+                <h3 class="stat-value">$ 1.250.000</h3>
+                <p class="stat-sub">Estimado cierre: $ 2.1M</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card chart-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">Entradas vs salidas (últimos 7 días)</h6>
+                    <select class="form-select form-select-sm w-auto">
+                        <option>Última semana</option>
+                        <option>Último mes</option>
+                        <option>Último año</option>
+                    </select>
+                </div>
+                <div class="chart-placeholder">
+                    <span>Gráfico de líneas aquí (Chart.js luego)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card chart-card">
+            <div class="card-body">
+                <h6 class="mb-2">Ocupación por tipo de vehículo</h6>
+                <div class="chart-placeholder">
+                    <span>Gráfico de dona aquí</span>
+                </div>
+                <ul class="list-unstyled small mt-3">
+                    <li><span class="dot"></span> Carros: 60%</li>
+                    <li><span class="dot"></span> Motos: 30%</li>
+                    <li><span class="dot"></span> Bicis: 10%</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

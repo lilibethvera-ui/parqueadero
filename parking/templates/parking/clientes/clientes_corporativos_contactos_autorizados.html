@@ -1,0 +1,198 @@
+{% extends "parking/base.html" %}
+
+{% block title %}Contactos autorizados · Convenios{% endblock %}
+
+{% block page_title %}
+Gestión de Convenios · Contactos autorizados
+{% endblock %}
+
+{% block content %}
+<div class="card" style="border-radius:16px; border:none; box-shadow:0 12px 30px rgba(15,23,42,0.05);">
+    <!-- HEADER -->
+    <div class="card-header bg-white d-flex flex-column align-items-start gap-2 small">
+        <div>
+            <h6 class="mb-0">Contactos autorizados</h6>
+            <small class="text-muted">
+                Gestiona las personas autorizadas por empresa para uso de convenios.
+            </small>
+        </div>
+        <button class="btn btn-sm btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#modalNuevoContacto">
+            <i class="bi bi-person-plus"></i> Nuevo contacto
+        </button>
+    </div>
+    <div class="card-body small">
+        <!-- BUSCADOR -->
+        <form method="get" class="mb-3">
+            <div class="input-group input-group-sm">
+                <input type="text"
+                       name="q"
+                       value="{{ query }}"
+                       class="form-control"
+                       placeholder="Buscar por nombre, documento o empresa...">
+                <button class="btn btn-outline-secondary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+        <!-- TABLA -->
+        <div class="table-responsive">
+            <table class="table table-hover table-sm align-middle responsive-table form-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>Contacto</th>
+                        <th>Documento</th>
+                        <th>Empresa</th>
+                        <th>Contacto</th>
+                        <th>Acciones</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for c in contactos %}
+                <tr>
+                    <form method="post" class="m-0 p-0">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="editar">
+                        <input type="hidden" name="contacto_id" value="{{ c.id }}">
+                        <!-- CONTACTO -->
+                        <td data-label="Contacto">
+                            <input type="text"
+                                   name="nombre"
+                                   value="{{ c.nombre }}"
+                                   class="form-control form-control-sm"
+                                   placeholder="Nombre completo">
+                        </td>
+                        <!-- DOCUMENTO -->
+                        <td data-label="Documento">
+                            <input type="text"
+                                   name="documento"
+                                   value="{{ c.documento }}"
+                                   class="form-control form-control-sm">
+                        </td>
+                        <!-- EMPRESA -->
+                        <td data-label="Empresa">
+                            <select name="empresa" class="form-select form-select-sm">
+                                {% for e in empresas %}
+                                    <option value="{{ e.id }}"
+                                        {% if c.empresa_id == e.id %}selected{% endif %}>
+                                        {{ e.razon_social }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <!-- CONTACTO -->
+                        <td data-label="Contacto">
+                            <div class="small">{{ c.telefono }}</div>
+                            <div class="text-muted small">{{ c.email }}</div>
+                        </td>
+                        <!-- ESTADO -->
+                        <td data-label="Estado">
+                            <div class="form-check form-switch d-inline-flex align-items-center">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       name="activo"
+                                       value="1"
+                                       {% if c.activo %}checked{% endif %}>
+                                <span class="small ms-2">
+                                    {% if c.activo %}Activo{% else %}Inactivo{% endif %}
+                                </span>
+                            </div>
+                        </td>
+                        <!-- ACCIONES -->
+                        <td class="text-end">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-save"></i><span class="d-inline d-md-none"> Guardar</span>
+                            </button>
+                        </td>
+                    </form>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        No hay contactos autorizados registrados.
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+<!-- ================= MODAL NUEVO CONTACTO ================= -->
+<div class="modal fade" id="modalNuevoContacto" tabindex="-1"
+     aria-labelledby="modalNuevoContactoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius:18px;">
+            <div class="modal-header">
+                <h5 class="modal-title small" id="modalNuevoContactoLabel">
+                    <i class="bi bi-person-plus"></i> Nuevo contacto autorizado
+                </h5>
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form method="post">
+                <div class="modal-body small">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="crear">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" name="nombre"
+                                   class="form-control form-control-sm" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Documento</label>
+                            <input type="text" name="documento"
+                                   class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Empresa</label>
+                            <select name="empresa" class="form-select form-select-sm" required>
+                                <option value="">— Selecciona —</option>
+                                {% for e in empresas %}
+                                    <option value="{{ e.id }}">{{ e.razon_social }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Teléfono</label>
+                            <input type="text" name="telefono"
+                                   class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email"
+                                   class="form-control form-control-sm">
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       name="activo"
+                                       value="1"
+                                       checked>
+                                <label class="form-check-label ms-1">
+                                    Contacto activo
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary"
+                            data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="bi bi-save"></i> Guardar contacto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

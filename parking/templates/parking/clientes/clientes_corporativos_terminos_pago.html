@@ -1,0 +1,179 @@
+{% extends "parking/base.html" %}
+
+{% block title %}Clientes corporativos · Términos de pago{% endblock %}
+
+{% block page_title %}
+Gestión de Clientes · Clientes Corporativos
+{% endblock %}
+
+{% block content %}
+<div class="card" style="border-radius:16px; border:none; box-shadow:0 12px 30px rgba(15,23,42,0.05);">
+  <div class="card-header bg-white d-flex flex-column align-items-start gap-2 small py-3">
+    <div>
+      <h6 class="mb-0">Términos de pago</h6>
+      <small class="text-muted">
+        Configura contado/crédito, días, cupo y fechas de corte/pago por empresa corporativa.
+      </small>
+    </div>
+  </div>
+  <div class="card-body small pt-3">
+    <form method="get" class="mt-2 mb-3">
+      <div class="input-group input-group-sm">
+        <input type="text" name="q" value="{{ query }}" class="form-control"
+               placeholder="Buscar por razón social, NIT, email o ciudad...">
+        <button class="btn btn-outline-secondary" type="submit">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+    </form>
+    <div class="table-wrap">
+      <table class="table table-hover table-sm align-middle empresas-terminos-table">
+        <thead class="table-light">
+          <tr>
+            <th>Empresa</th>
+            <th>Término</th>
+            <th>Crédito</th>
+            <th>Corte / Pago</th>
+            <th>Estado</th>
+            <th style="width:120px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in empresas %}
+          {% with e.terminos_pago as t %}
+          <tr>
+            <td data-label="Empresa">
+              <strong>{{ e.razon_social }}</strong><br>
+              <span class="text-muted small">{{ e.nit }}</span>
+            </td>
+            <td data-label="Término">
+              {% if t %}
+                <span class="badge bg-light text-dark border">{{ t.get_tipo_display }}</span>
+              {% else %}
+                <span class="text-muted">Sin configurar</span>
+              {% endif %}
+            </td>
+            <td data-label="Crédito">
+              {% if t and t.tipo == "CREDITO" %}
+                <div><strong>{{ t.dias_credito }}</strong> días</div>
+                {% if t.cupo_credito %}
+                  <div class="text-muted small">Cupo: ${{ t.cupo_credito }}</div>
+                {% endif %}
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td data-label="Corte / Pago">
+              {% if t %}
+                <div class="text-muted small">
+                  Corte: {{ t.dia_corte|default:"—" }} · Pago: {{ t.dia_pago|default:"—" }}
+                </div>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td data-label="Estado">
+              {% if t %}
+                <span class="badge {% if t.estado == 'ACTIVO' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                  {{ t.get_estado_display }}
+                </span>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td data-label="Acción" class="text-end td-acciones">
+              <button class="btn btn-sm btn-outline-primary w-100 w-md-auto"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalTermino{{ e.id }}"
+                      type="button">
+                <i class="bi bi-gear"></i> Configurar
+              </button>
+            </td>
+          </tr>
+          {% endwith %}
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted py-4">No hay empresas registradas.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{# ===== MODALES ===== #}
+{% for e in empresas %}
+{% with e.terminos_pago as t %}
+<div class="modal fade" id="modalTermino{{ e.id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content" style="border-radius:18px;">
+      <div class="modal-header">
+        <h5 class="modal-title small">
+          Términos de pago · {{ e.razon_social }}
+          <span class="text-muted small">({{ e.nit }})</span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="empresa_id" value="{{ e.id }}">
+        <div class="modal-body small modal-body-scroll">
+          <div class="row g-2">
+            <div class="col-12 col-md-4">
+              <label class="form-label">Tipo</label>
+              {{ empty_form.tipo.as_widget }}
+            </div>
+            <div class="col-6 col-md-4">
+              <label class="form-label">Días de crédito</label>
+              {{ empty_form.dias_credito.as_widget }}
+              <small class="text-muted">
+                Cantidad de días después del corte para realizar el pago (ej: 15, 30).
+              </small>
+            </div>
+            <div class="col-6 col-md-4">
+              <label class="form-label">Cupo (opcional)</label>
+              {{ empty_form.cupo_credito.as_widget }}
+              <small class="text-muted">
+                Límite máximo de crédito permitido para la empresa.
+              </small>
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label">Día corte</label>
+              {{ empty_form.dia_corte.as_widget }}
+              <small class="text-muted">
+                Día del mes en que se cierran los consumos (1–31).
+              </small>
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label">Día pago</label>
+              {{ empty_form.dia_pago.as_widget }}
+              <small class="text-muted">
+                Día habitual del mes en que la empresa realiza el pago.
+              </small>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Estado</label>
+              {{ empty_form.estado.as_widget }}
+            </div>
+            <div class="col-12">
+              <label class="form-label">Notas</label>
+              {{ empty_form.notas.as_widget }}
+              <small class="text-muted">
+                Observaciones internas sobre condiciones especiales del acuerdo.
+              </small>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-sm btn-primary">
+            <i class="bi bi-save"></i> Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endwith %}
+{% endfor %}
+{% endblock %}

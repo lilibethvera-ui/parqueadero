@@ -1,0 +1,243 @@
+{% extends "parking/base.html" %}
+
+{% block title %}Clientes Frecuentes | POS Parqueadero{% endblock %}
+
+{% block page_title %}
+Gestión de Clientes · Registro
+{% endblock %}
+
+{% block content %}
+<div class="card" style="border-radius: 16px; border: none; box-shadow: 0 12px 30px rgba(15,23,42,0.05);">
+    <div class="card-header bg-white d-flex flex-column align-items-start gap-2 small">
+        <div>
+            <h6 class="mb-0">Clientes frecuentes</h6>
+        </div>
+        <button class="btn btn-sm btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#modalNuevoCliente">
+            <i class="bi bi-plus-circle"></i> Nuevo cliente
+        </button>
+    </div>
+    <div class="card-body">
+        <!-- Buscador -->
+        <form method="get" class="mb-3 small">
+            <div class="input-group input-group-sm">
+                <input type="text"
+                       name="q"
+                       value="{{ query }}"
+                       class="form-control"
+                       placeholder="Buscar por nombre, documento o placa...">
+                <button class="btn btn-outline-secondary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+        <!-- Tabla de clientes -->
+        <div class="table-responsive">
+            <table class="table table-hover table-sm align-middle responsive-table form-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Documento</th>
+                        <th>Vehículos</th>
+                        <th>Contacto</th>
+                        <th>Estado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in clientes %}
+                    <tr>
+                        <form method="post" class="m-0 p-0">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="editar">
+                            <input type="hidden" name="cliente_id" value="{{ c.id }}">
+                            <!-- Cliente -->
+                            <td data-label="Cliente">
+                                <div class="row g-1">
+                                    <div class="col-6">
+                                        <input type="text"
+                                               name="nombre"
+                                               value="{{ c.nombre }}"
+                                               class="form-control form-control-sm"
+                                               placeholder="Nombre">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text"
+                                               name="apellidos"
+                                               value="{{ c.apellidos }}"
+                                               class="form-control form-control-sm"
+                                               placeholder="Apellidos">
+                                    </div>
+                                </div>
+                            </td>                    
+                            <!-- Documento -->
+                            <td data-label="Documento">
+                                <input type="text"
+                                       name="documento"
+                                       value="{{ c.documento }}"
+                                       class="form-control form-control-sm"
+                                       placeholder="Documento">
+                            </td>
+                            <!-- Vehículos -->
+                            <td data-label="Vehículos">
+                                {% for v in c.vehiculos.all %}
+                                    <span class="badge bg-secondary">{{ v.placa }}</span>
+                                {% empty %}
+                                    <span class="text-muted small">Sin vehículos</span>
+                                {% endfor %}
+                            </td>
+                            <td data-label="Contacto" class="td-contacto">
+                                <div class="row g-1">
+                                    <div class="col-6">
+                                        <input type="text"
+                                               name="telefono"
+                                               value="{{ c.telefono }}"
+                                               class="form-control form-control-sm"
+                                               placeholder="Teléfono">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="email"
+                                               name="email"
+                                               value="{{ c.email }}"
+                                               class="form-control form-control-sm"
+                                               placeholder="Email">
+                                    </div>
+                                </div>
+                            </td>
+                            <!-- Estado -->
+                            <td class="text-center">
+                                <div class="form-check form-switch d-inline-flex align-items-center">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           name="activo"
+                                           value="1"
+                                           {% if c.activo %}checked{% endif %}>
+                                    <span class="small ms-1">
+                                        {% if c.activo %}Activo{% else %}Inactivo{% endif %}
+                                    </span>
+                                </div>
+                            </td>
+                            <!-- Acciones -->
+                            <td data-label="Acciones" class="text-end td-acciones">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="submit" class="btn btn-outline-primary">
+                                        <i class="bi bi-save"></i>
+                                    </button>
+                                    <a href="{% url 'clientes_frecuentes_historial' %}?cliente_id={{ c.id }}"
+                                       class="btn btn-outline-secondary">
+                                        <i class="bi bi-clock-history"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </form>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No hay clientes registrados.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- ================= MODAL NUEVO CLIENTE ================= -->
+<div class="modal fade" id="modalNuevoCliente" tabindex="-1" aria-labelledby="modalNuevoClienteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 18px;">
+            <div class="modal-header">
+                <h5 class="modal-title small" id="modalNuevoClienteLabel">
+                    <i class="bi bi-person-plus"></i> Nuevo cliente frecuente
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form method="post">
+                <div class="modal-body small">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="crear">
+                    <div class="row g-2">
+                        <!-- Datos del cliente -->
+                        <div class="col-12 col-md-8">
+                            <h6 class="mb-2">Datos del cliente</h6>
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <div class="row g-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Nombre</label>
+                                            {{ cliente_form.nombre }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Apellidos</label>
+                                            {{ cliente_form.apellidos }}
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                                <div class="col-md-6">
+                                    <label class="form-label">Documento</label>
+                                    {{ cliente_form.documento }}
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="row g-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Teléfono</label>
+                                            {{ cliente_form.telefono }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Email</label>
+                                            {{ cliente_form.email }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Ciudad</label>
+                                    {{ cliente_form.ciudad }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Dirección</label>
+                                    {{ cliente_form.direccion }}
+                                </div>
+                                <div class="col-12 form-check mt-1">
+                                    {{ cliente_form.activo }}
+                                    <label class="form-check-label ms-1">Cliente activo</label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Datos del vehículo -->
+                        <div class="col-12 col-md-4">
+                            <h6 class="mb-2">Vehículo principal</h6>
+                            <div class="mb-2">
+                                <label class="form-label">Placa</label>
+                                {{ vehiculo_form.placa }}
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Tipo</label>
+                                {{ vehiculo_form.tipo }}
+                            </div>
+                            <div class="form-check mt-1">
+                                {{ vehiculo_form.activo }}
+                                <label class="form-check-label ms-1">Vehículo activo</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary"
+                            data-bs-dismiss="modal">
+                            Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="bi bi-save"></i> Guardar cliente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
