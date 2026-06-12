@@ -135,3 +135,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'parking.Usuario'
 
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/seleccionar-sucursal/'

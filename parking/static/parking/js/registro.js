@@ -113,34 +113,3 @@ function togglePasswordVisibility(inputId, btn) {
     }
 }
 
-/// fUNCION PARA LAS RECTAS
-document.addEventListener("DOMContentLoaded", function () {
-    const enlaceCambioPantalla = document.querySelector(".login-link, [href*='login'], [href*='registro']");
-
-    if (enlaceCambioPantalla) {
-        enlaceCambioPantalla.addEventListener("click", function (event) {
-            event.preventDefault();
-            
-            const rutaDestino = this.getAttribute("href");
-            const rectasIzquierdas = document.querySelectorAll(".recta-izq");
-            const rectasDerechas = document.querySelectorAll(".recta-der");
-            const avatar = document.getElementById("avatarAnimado3D");
-
-            if (avatar) {
-                avatar.classList.add("reversa-avatar");
-            }
-
-            rectasIzquierdas.forEach(linea => {
-                linea.classList.add("reversa-izquierda");
-            });
-
-            rectasDerechas.forEach(linea => {
-                linea.classList.add("reversa-derecha");
-            });
-
-            setTimeout(() => {
-                window.location.href = rutaDestino;
-            }, 700);
-        });
-    }
-});

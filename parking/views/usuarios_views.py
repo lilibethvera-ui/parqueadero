@@ -1,4 +1,5 @@
 import re
+import uuid
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -107,12 +108,13 @@ def registro_view(request):
             # Creación segura con ORM (Inyección SQL Mitigada de fábrica)
             nueva_empresa = EmpresaSaaS.objects.create(
                 nombre_comercial=nombre_empresa_input,
+                nit= f"TEMP-{uuid.uuid4().hex[:8].upper()}",
                 activo=True
             )
             
             # Creación automática de la sucursal por defecto
             Parqueadero.objects.create(
-                nombre="Sucursal Principal", 
+                nombre_sucursal="Sucursal Principal", 
                 empresa=nueva_empresa
             )
 

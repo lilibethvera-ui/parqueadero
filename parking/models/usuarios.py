@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser
 class EmpresaSaaS(models.Model):
     """El inquilino principal (Tenant). El dueño que te contrata el software (ej: Pepito Pérez S.A.)"""
     nombre_comercial = models.CharField(max_length=100, unique=True)
-    nit = models.CharField(max_length=30, unique=True)
+    nit = models.CharField(max_length=30, unique=True, blank=True, default='')
     activo = models.BooleanField(default=True)
     creado_en = models.DateTimeField(auto_now_add=True)
 

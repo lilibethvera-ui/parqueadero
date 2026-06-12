@@ -3,7 +3,8 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #eeebeb;
+
+    background: linear-gradient(135deg, #f0fff7 0%, #ffffff 50%, #f5f0ff 100%);
     overflow-x: hidden;
 }
 
@@ -46,8 +47,22 @@ body {
 }
 
 .text-muted {
-    color: #4a5568 !important;
-    font-size: 0.9rem;
+    color: black !important;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.tagline {
+    font-family:  'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    font-style: italic;
+    color: #000080;
+    letter-spacing: 0.5px;
+    background: black;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.9;
 }
 
 /* INPUTS DE VIDRIO TRANSPARENTE */
@@ -199,58 +214,5 @@ body {
     border-color: #2f855a !important; 
 }
 
-.fondo-lineas-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: -1;
-    overflow: hidden;
-}
 
-/* KEYFRAMES: ENTRADA Y SALIDA */
-@keyframes entradaRectaIzquierda {
-    0% { transform: translateX(-120%); opacity: 0; }
-    100% { transform: translateX(0); opacity: 1; }
-}
-@keyframes entradaRectaDerecha {
-    0% { transform: translateX(120%); opacity: 0; }
-    100% { transform: translateX(0); opacity: 1; }
-}
-@keyframes salidaRectaIzquierda {
-    0% { transform: translateX(0); opacity: 1; }
-    100% { transform: translateX(-120%); opacity: 0; }
-}
-@keyframes salidaRectaDerecha {
-    0% { transform: translateX(0); opacity: 1; }
-    100% { transform: translateX(120%); opacity: 0; }
-}
-
-
-/* ASIGNACIÓN DE CLASES RECTAS CON DELAYS (4 por lado) */
-.recta-izq {
-    transform: translateX(-120%); opacity: 0;
-    animation: entradaRectaIzquierda 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-               vibracionLineal 7s ease-in-out infinite alternate;
-}
-
-.recta-der {
-    transform: translateX(120%); opacity: 0;
-    animation: entradaRectaDerecha 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-               vibracionLineal 8s ease-in-out infinite alternate-reverse;
-}
-
-.r-izq-1 { animation-delay: 0.0s, 1.2s; }
-.r-izq-2 { animation-delay: 0.15s, 1.35s; }
-.r-izq-3 { animation-delay: 0.3s, 1.5s; }
-.r-izq-4 { animation-delay: 0.45s, 1.65s; }
-
-.r-der-1 { animation-delay: 0.1s, 1.2s; }
-.r-der-2 { animation-delay: 0.25s, 1.35s; }
-.r-der-3 { animation-delay: 0.4s, 1.5s; }
-.r-der-4 { animation-delay: 0.55s, 1.65s; }
-
-.reversa-izquierda { animation: salidaRectaIzquierda 0.7s cubic-bezier(0.7, 0, 0.84, 0) forwards !important; }
-.reversa-derecha   { animation: salidaRectaDerecha 0.7s cubic-bezier(0.7, 0, 0.84, 0) forwards !important; }
 
