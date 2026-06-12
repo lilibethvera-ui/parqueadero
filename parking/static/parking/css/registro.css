@@ -3,7 +3,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(350deg, #f0fff7 0%, #ffffff 10%, #f5f0ff 100%);
+    background: linear-gradient(350deg, #f0fff7 50%, #ffffff 10%, #f5f0ff 50%);
     overflow-x: hidden;
 }
 
@@ -21,16 +21,16 @@ body {
 
 /* TARJETA PRINCIPAL */
 .login-card {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.70);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
     padding: 2rem; 
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.45);
-    box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.05);
+    box-shadow: 0 10px 40px 0 rgba(31, 48, 135, 0.05);
     width: 100%; 
     max-width: 650px; 
-    transition: all 0.3s ease;
+    /* transition: all 0.3s ease; */
 }
 
 .card-title {color: black;font-weight: 700; font-size: 26px;letter-spacing: 0.5px;}
