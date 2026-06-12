@@ -50,6 +50,14 @@
                 <div class="row mt-4">
                     <div class="col-12">
                         <button type="submit" class="btn btn-navy w-100 mb-3">Ingresar</button>
+                        <div class="text-center mt-4" style="color: #666; font-size: 14px; text-decoration: none;"">
+                            <p class="mb-0" style="color: #666; font-size: 14px;">¿Olvidaste tu contraseña? 
+                                <a href="#" class="login-link" 
+                                    style="color: #000080; font-weight: 600; text-decoration: none;">
+                                    Recupérala aquí
+                                </a>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -66,7 +74,8 @@
             <div class="text-center mt-4">
                 <p class="mb-0" style="color: #666; font-size: 14px;">
                     ¿No tienes una cuenta? 
-                    <a href="{% url 'registro' %}" class="login-link" style="color: #000080; font-weight: 600; text-decoration: none;">Regístrate aquí</a>
+                    <a href="{% url 'registro' %}" class="login-link" 
+                        style="color: #000080; font-weight: 600; text-decoration: none;">Regístrate aquí</a>
                 </p>
             </div>
         </div>

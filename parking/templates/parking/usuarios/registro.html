@@ -87,7 +87,7 @@
     </div>
 </form>
 
-            <div class="divider">O</div>
+            <div class="divider">Otra forma de iniciar sesión</div>
 
             <div class="d-grid gap-2">
                 <button type="button" class="btn btn-google d-flex align-items-center justify-content-center gap-2">
@@ -96,8 +96,11 @@
                 </button>
             </div>
 
-            <div class="text-center mt-3">
-                <a href="{% url 'login' %}" class="login-link">Iniciar Sesión</a>
+            <div class="text-center mt-4">
+                <p class="mb-0" style="color: #666; font-size: 14px;">
+                    ¿Ya tienes una cuenta?
+                    <a href="{% url 'login' %}" class="login-link" 
+                        style="color: #000080; font-weight: 600; text-decoration: none;">Iniciar Sesión</a>
             </div>
         </div>
     </div>
