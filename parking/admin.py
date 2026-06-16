@@ -5,6 +5,7 @@ from .models import (
     Vehiculo, 
     EmpresaCorporativa,
     ConvenioEmpresa,
+    RegistroAcceso
 )
 
 @admin.register(TarifaBaseTiempo)
@@ -43,3 +44,11 @@ class EmpresaCorporativaAdmin(admin.ModelAdmin):
 #     list_display = ("empresa", "nit", "direccion", "telefono", "email", "activo")
 #     search_fields = ("empresa__razon_social", "empresa__nit", "tipo_convenio")
 #     list_filter = ("tipo_convenio",)
+
+@admin.register(RegistroAcceso)
+class RegistroAccesoAdmin(admin.ModelAdmin):
+    list_display = ('usuario_texto', 'resultado', 'ip', 'fecha')
+    list_filter = ('resultado',)
+    search_fields = ('usuario_texto', 'ip')
+    ordering = ('-fecha',)
+    readonly_fields = ('usuario_texto', 'ip', 'fecha', 'resultado', 'user_agent')

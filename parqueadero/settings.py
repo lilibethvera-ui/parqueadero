@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'parking',
+    'axes'
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'axes.middleware.AxesMiddleware',
 ]
 
 ROOT_URLCONF = 'parqueadero.urls'
@@ -137,3 +139,33 @@ AUTH_USER_MODEL = 'parking.Usuario'
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/seleccionar-sucursal/'
+
+# ============ SEGURIDAD ============
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_AGE = 28800        # Sesión expira en 8 horas
+CSRF_COOKIE_HTTPONLY = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_BROWSER_XSS_FILTER = True
+
+
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+AXES_FAILURE_LIMIT = 5            # Bloquea tras 5 intentos fallidos
+AXES_COOLOFF_TIME = 1             # Desbloquea después de 1 hora
+AXES_LOCKOUT_PARAMETERS = ['username', 'ip_address']  # Bloquea por usuario + IP
+AXES_RESET_ON_SUCCESS = True      # Resetea el contador si el login es exitoso
+AXES_VERBOSE = False
+
+# ============ EMAIL (Gmail) ============
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'noreply.notificacionesbyv@gmail.com'       
+EMAIL_HOST_PASSWORD = 'pzlnragslxiouplj'     
+DEFAULT_FROM_EMAIL = 'Parqueadero <tucorreo@gmail.com>'
+
+

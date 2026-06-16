@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from parking import views as parking_views
-
+from django.contrib.auth import views as auth_views
 from parking.views import tarifas_views 
 from parking.views import clientes_views
 from parking.views import convenios_views
@@ -270,4 +270,36 @@ urlpatterns = [
     path('alertas/financieras/pagos-atrasados/', parking_views.alertas_financieras_pagos_atrasados, name='alertas_financieras_pagos_atrasados'),
     path('alertas/financieras/objetivos-venta/', parking_views.alertas_financieras_objetivos_venta, name='alertas_financieras_objetivos_venta'),
     path('alertas/financieras/anomalias-ingresos/', parking_views.alertas_financieras_anomalias_ingresos, name='alertas_financieras_anomalias_ingresos'),
+
+
+
+    path('password-reset/',
+    auth_views.PasswordResetView.as_view(
+        template_name='parking/usuarios/password_reset.html',
+        email_template_name='parking/usuarios/password_reset_email.html',
+        subject_template_name='parking/usuarios/password_reset_subject.txt',
+        success_url='/password-reset/done/'
+    ),
+    name='password_reset'),
+
+    path('password-reset/done/',
+        auth_views.PasswordResetDoneView.as_view(
+            template_name='parking/usuarios/password_reset_done.html'
+        ),
+        name='password_reset_done'),
+    
+    path('password-reset/<uidb64>/<token>/',
+        auth_views.PasswordResetConfirmView.as_view(
+            template_name='parking/usuarios/password_reset_confirm.html',
+            success_url='/password-reset/complete/'
+        ),
+        name='password_reset_confirm'),
+    
+    path('password-reset/complete/',
+        auth_views.PasswordResetCompleteView.as_view(
+            template_name='parking/usuarios/password_reset_complete.html'
+        ),
+        name='password_reset_complete'),
+
+
 ]
