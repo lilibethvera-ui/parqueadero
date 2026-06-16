@@ -169,3 +169,4 @@ EMAIL_HOST_PASSWORD = 'pzlnragslxiouplj'
 DEFAULT_FROM_EMAIL = 'Parqueadero <tucorreo@gmail.com>'
 
 
+## Recordad organizar SECRET_KEY y EMAIL_HOST_PASSWORD en variables de entorno para producción en el .env
