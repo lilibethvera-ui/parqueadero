@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso bloqueado - Parqueadero</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'parking/css/registro.css' %}">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card text-center" style="max-width:420px;">
+            <img src="{% static 'parking/img/logo_horizontal.png' %}" width="220" class="mb-4" alt="Logo">
+
+            <!-- Ícono de bloqueo -->
+            <div class="mb-3">
+                <i class="bi bi-shield-lock-fill" style="font-size:3.5rem; color:#c53030;"></i>
+            </div>
+
+            <h5 style="color:#c53030; font-weight:700;">Acceso bloqueado</h5>
+
+            <p class="text-muted small mt-2 mb-1">
+                Detectamos demasiados intentos fallidos de inicio de sesión.
+                Tu acceso ha sido bloqueado temporalmente por seguridad.
+            </p>
+
+            <!-- Contador regresivo -->
+            <div class="my-3 p-3 rounded-3" style="background:#fff5f5; border:1px solid #fed7d7;">
+                <div class="text-muted small mb-1">Podrás intentarlo de nuevo en:</div>
+                <div id="contador" style="font-size:2rem; font-weight:700; color:#c53030;">
+                    60:00
+                </div>
+                <div class="text-muted small">segundos</div>
+            </div>
+
+            <p class="small text-muted">
+                Por favor no recargue ni abandone esta página, 
+                serás redirigido automáticamente al login una vez que el bloqueo expire. 
+            </p>
+
+        </div>
+    </div>
+
+    <script>
+    // Contador regresivo de 60 segundos
+    let totalSegundos = 60;
+
+    function formatTiempo(seg) {
+        const m = Math.floor(seg / 60).toString().padStart(2, '0');
+        const s = (seg % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    }
+
+    const contador  = document.getElementById('contador');
+    const btnVolver = document.getElementById('btnVolver');
+    const msgEspera = document.getElementById('msgEspera');
+
+    const intervalo = setInterval(function () {
+        totalSegundos--;
+
+        if (totalSegundos <= 0) {
+            clearInterval(intervalo);
+            contador.textContent  = '00:00';
+            btnVolver.disabled    = false;
+            btnVolver.classList.add('btn-navy');
+            msgEspera.textContent = 'Redirigiendo al login...';
+            msgEspera.style.color = '#2f855a';
+
+            // Redirige automáticamente después de 2 segundos
+            setTimeout(function () {
+                window.location.href = "{% url 'login' %}";
+            }, 1000);
+
+            return;
+        }
+
+        contador.textContent = formatTiempo(totalSegundos);
+
+        // Cambiar color cuando queden menos de 5 minutos
+        if (totalSegundos <= 30) {
+            contador.style.color = '#d69e2e';
+        }
+
+    }, 1000);
+    </script>
+</body>
+</html>

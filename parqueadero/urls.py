@@ -20,6 +20,8 @@ urlpatterns = [
     path('registro/', parking_views.registro_view, name='registro'),
     path('logout/', usuarios_views.logout_view, name='logout'),
     path('seleccionar-sucursal/', usuarios_views.seleccionar_sucursal_view, name='seleccionar_sucursal'),
+    path('validar-username/', usuarios_views.validar_username, name='validar_username'),
+    path('validar-email/', usuarios_views.validar_email, name='validar_email'),
 
     # ======= RESUMEN GENERAL ================
     path('dashboard/estado-actual/', parking_views.dashboard_estado_actual, name='dashboard_estado_actual'),

@@ -159,3 +159,67 @@ body {
 .link-recuperar span {font-weight: 700;background: linear-gradient(90deg, #00BE5F, #8B50FB);-webkit-text-fill-color: transparent;}
 .link-recuperar:hover span {opacity: 0.8;}
 
+
+/* ============ ESTADOS DE CAMPO ============ */
+.field-ok    { border-color: #2f855a !important; }
+.field-error { border-color: #c53030 !important; }
+.field-checking { border-color: #d69e2e !important; }
+
+.field-icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 10;
+    font-size: 1rem;
+}
+
+.field-feedback {
+    min-height: 18px;
+    font-size: 0.82rem;
+    padding-left: 4px;
+}
+
+/* ============ BARRA DE FORTALEZA ============ */
+.strength-bar-wrap {
+    height: 5px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.strength-bar {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.strength-weak   { background: #e53e3e; }
+.strength-fair   { background: #dd6b20; }
+.strength-good   { background: #d69e2e; }
+.strength-strong { background: #38a169; }
+
+/* ============ CHECKLIST REQUISITOS ============ */
+.req-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.req-list li {
+    font-size: 0.78rem;
+    color: #718096;
+    margin-bottom: 3px;
+    transition: color 0.2s;
+}
+
+.req-list li i {
+    margin-right: 5px;
+    font-size: 0.75rem;
+}
+
+.req-ok   { color: #2f855a !important; }
+.req-fail { color: #c53030 !important; }
+

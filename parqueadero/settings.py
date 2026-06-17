@@ -74,7 +74,7 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    #{'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
@@ -109,11 +109,12 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # ============ DJANGO-AXES ============
-AXES_FAILURE_LIMIT = 5
-AXES_COOLOFF_TIME = 1
+AXES_FAILURE_LIMIT = 3
+AXES_COOLOFF_TIME = 1/60
 AXES_LOCKOUT_PARAMETERS = ['username', 'ip_address']
 AXES_RESET_ON_SUCCESS = True
 AXES_VERBOSE = False
+AXES_LOCKOUT_CALLABLE = 'parking.views.usuarios_views.lockout_view'  # ← agregar esta línea
 
 # ============ EMAIL ============
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

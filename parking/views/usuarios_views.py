@@ -8,6 +8,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from axes.helpers import get_client_ip_address
 import axes.attempts as axes_attempts
+from django.http import JsonResponse
 
 from parking.models import Parqueadero
 from ..forms import RegistroSaaSForm
@@ -64,11 +65,20 @@ def login_view(request):
             )
 
         else:
+            # Contar intentos fallidos para este usuario/IP
+            from axes.models import AccessAttempt
+            ip = _get_client_ip(request)
+            intentos = AccessAttempt.objects.filter(
+                ip_address=ip
+            ).first()
+
+            resultado = 'BLOQUEADO' if (intentos and intentos.failures_since_start >= 5) else 'FALLIDO'
+            
             # Login fallido
             RegistroAcceso.objects.create(
                 usuario_texto=login_input,
                 ip=ip,
-                resultado='FALLIDO',
+                resultado=resultado,
                 user_agent=request.META.get('HTTP_USER_AGENT', '')
             )
             messages.error(request, "Usuario, correo o contraseña incorrectos.")
@@ -173,3 +183,16 @@ def registro_view(request):
             return render(request, 'parking/usuarios/registro.html')
 
     return render(request, 'parking/usuarios/registro.html')
+
+def validar_username(request):
+    username = request.GET.get('username', '').strip()
+    existe = Usuario.objects.filter(username=username).exists()
+    return JsonResponse({'disponible': not existe})
+
+def validar_email(request):
+    email = request.GET.get('email', '').strip()
+    existe = Usuario.objects.filter(email=email).exists()
+    return JsonResponse({'disponible': not existe})
+
+def lockout_view(request, credentials, *args, **kwargs):
+    return render(request, 'parking/usuarios/lockout.html', status=403)

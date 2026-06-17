@@ -12,95 +12,125 @@
     <link rel="stylesheet" href="{% static 'parking/css/registro.css' %}">
 </head>
 <body>
-
-
     <div class="login-container">
         <div class="login-card">
             <div class="text-center mb-4">
-                <img src="{% static 'parking/img/logo_horizontal.png' %}" alt="Logo B&V" width="280" class="mb-2">
+                <img src="{% static 'parking/img/logo_horizontal.png' %}" alt="Logo" width="280" class="mb-2">
                 <p class="text-muted small">Crea tu cuenta y empieza hoy</p>
             </div>
 
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-danger small py-2" role="alert">
-                        {{ message }}
-                    </div>
+                    <div class="alert alert-danger small py-2" role="alert">{{ message }}</div>
                 {% endfor %}
             {% endif %}
 
             <form id="formRegistro" method="POST" action="{% url 'registro' %}" novalidate>
-    {% csrf_token %}
-    
-    <div class="row">
-    <div class="col-12">
-        <div class="form-floating mb-3 position-relative">
-            <input type="text" id="id_username" name="username" class="form-control" placeholder="Ej: alejo_betan" required>
-            <label for="id_username">Nombre de Usuario</label>
-            <div id="error_username" class="invalid-feedback-custom"></div>
-        </div>
-    </div>
-</div>
-    
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-floating mb-3">
-                <input type="email" id="id_email" name="email" class="form-control" placeholder="ejemplo@correo.com" required>
-                <label for="id_email">Correo Electrónico</label>
-                <div id="error_email" class="invalid-feedback-custom"></div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-floating mb-3">
-                <input type="text" id="id_nombre_empresa" name="nombre_empresa" class="form-control" placeholder="Ej: Parqueadero Central" required>
-                <label for="id_nombre_empresa">Nombre Comercial</label>
-                <div id="error_nombre_empresa" class="invalid-feedback-custom"></div>
-            </div>
-        </div>
-    </div>
+                {% csrf_token %}
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-floating mb-3 position-relative">
-            <input type="password" id="id_password" name="password" class="form-control" placeholder="••••••••" style="padding-right: 45px;" required>
-            <label dfor="id_password">Contraseña</label>
-            <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('id_password', this)">
-                <i class="bi bi-eye-slash"></i> </button>
-            <div id="error_password" class="invalid-feedback-custom"></div>
-        </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-floating mb-3 position-relative">
-            <input type="password" id="id_password_confirm" name="password_confirm" class="form-control" placeholder="••••••••" style="padding-right: 45px;" required>
-            <label for="id_password_confirm">Confirmar Contraseña</label>
-            <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('id_password_confirm', this)">
-                <i class="bi bi-eye-slash"></i> </button>
-            <div id="error_password_confirm" class="invalid-feedback-custom"></div>
-        </div>
-        </div>
-    </div>
+                <!-- USERNAME -->
+                <div class="form-floating mb-1 position-relative">
+                    <input type="text" id="id_username" name="username"
+                           class="form-control" placeholder="Ej: alejo_betan"
+                           autocomplete="off" required>
+                    <label for="id_username">Nombre de Usuario</label>
+                    <!-- Icono de estado -->
+                    <span class="field-icon" id="icon_username"></span>
+                </div>
+                <!-- Feedback username -->
+                <div id="fb_username" class="field-feedback mb-3"></div>
 
-    <div class="row mt-2">
-        <div class="col-12">
-            <button type="submit" id="btnSubmit" class="btn btn-navy w-100 mb-3" disabled>Registrarme</button>
-        </div>
-    </div>
-</form>
+                <div class="row">
+                    <!-- EMAIL -->
+                    <div class="col-md-6">
+                        <div class="form-floating mb-1 position-relative">
+                            <input type="email" id="id_email" name="email"
+                                   class="form-control" placeholder="ejemplo@correo.com"
+                                   autocomplete="off" required>
+                            <label for="id_email">Correo Electrónico</label>
+                            <span class="field-icon" id="icon_email"></span>
+                        </div>
+                        <div id="fb_email" class="field-feedback mb-3"></div>
+                    </div>
+                    <!-- NOMBRE EMPRESA -->
+                    <div class="col-md-6">
+                        <div class="form-floating mb-1 position-relative">
+                            <input type="text" id="id_nombre_empresa" name="nombre_empresa"
+                                   class="form-control" placeholder="Ej: Parqueadero Central"
+                                   required>
+                            <label for="id_nombre_empresa">Nombre Comercial</label>
+                            <span class="field-icon" id="icon_empresa"></span>
+                        </div>
+                        <div id="fb_empresa" class="field-feedback mb-3"></div>
+                    </div>
+                </div>
+
+                <!-- CONTRASEÑA -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating mb-1 position-relative">
+                            <input type="password" id="id_password" name="password"
+                                   class="form-control" placeholder="••••••••"
+                                   style="padding-right:45px;" required>
+                            <label for="id_password">Contraseña</label>
+                            <button type="button" class="btn-toggle-eye"
+                                    onclick="togglePasswordVisibility('id_password', this)">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
+                        </div>
+                        <!-- Barra de fortaleza -->
+                        <div class="strength-bar-wrap mb-1">
+                            <div class="strength-bar" id="strengthBar"></div>
+                        </div>
+                        <div id="fb_password" class="field-feedback mb-2"></div>
+                        <!-- Checklist de requisitos -->
+                        <ul class="req-list mb-3" id="reqList">
+                            <li id="req_len"><i class="bi bi-x-circle-fill"></i> Mínimo 8 caracteres</li>
+                            <li id="req_upper"><i class="bi bi-x-circle-fill"></i> Al menos una mayúscula</li>
+                            <li id="req_num"><i class="bi bi-x-circle-fill"></i> Al menos un número</li>
+                            <li id="req_notonlynum"><i class="bi bi-x-circle-fill"></i> No puede ser solo números</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating mb-1 position-relative">
+                            <input type="password" id="id_password_confirm" name="password_confirm"
+                                   class="form-control" placeholder="••••••••"
+                                   style="padding-right:45px;" required>
+                            <label for="id_password_confirm">Confirmar Contraseña</label>
+                            <button type="button" class="btn-toggle-eye"
+                                    onclick="togglePasswordVisibility('id_password_confirm', this)">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
+                        </div>
+                        <div id="fb_confirm" class="field-feedback mb-3"></div>
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <button type="submit" id="btnSubmit"
+                                class="btn btn-navy w-100 mb-3" disabled>
+                            Registrarme
+                        </button>
+                    </div>
+                </div>
+            </form>
 
             <div class="divider">Otra forma de iniciar sesión</div>
-
             <div class="d-grid gap-2">
                 <button type="button" class="btn btn-google d-flex align-items-center justify-content-center gap-2">
                     <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" width="20" height="20">
                     Google
                 </button>
             </div>
-
             <div class="text-center mt-4">
-                <p class="mb-0" style="color: #666; font-size: 14px;">
+                <p class="mb-0" style="color:#666; font-size:14px;">
                     ¿Ya tienes una cuenta?
-                    <a href="{% url 'login' %}" class="login-link" 
-                        style="color: #000080; font-weight: 600; text-decoration: none;">Iniciar Sesión</a>
+                    <a href="{% url 'login' %}" class="login-link"
+                       style="color:#000080; font-weight:600; text-decoration:none;">
+                       Iniciar Sesión
+                    </a>
+                </p>
             </div>
         </div>
     </div>
