@@ -44,7 +44,6 @@
     </div>
 
     <script>
-    // Contador regresivo de 60 segundos
     let totalSegundos = 60;
 
     function formatTiempo(seg) {
@@ -54,33 +53,27 @@
     }
 
     const contador  = document.getElementById('contador');
-    const btnVolver = document.getElementById('btnVolver');
-    const msgEspera = document.getElementById('msgEspera');
+
+    // Inicializar el contador en pantalla
+    contador.textContent = formatTiempo(totalSegundos);
 
     const intervalo = setInterval(function () {
         totalSegundos--;
+        contador.textContent = formatTiempo(totalSegundos);
+
+        // Cambiar color cuando queden menos de 30 segundos
+        if (totalSegundos <= 30) {
+            contador.style.color = '#d69e2e';
+        }
 
         if (totalSegundos <= 0) {
             clearInterval(intervalo);
             contador.textContent  = '00:00';
-            btnVolver.disabled    = false;
-            btnVolver.classList.add('btn-navy');
-            msgEspera.textContent = 'Redirigiendo al login...';
             msgEspera.style.color = '#2f855a';
 
-            // Redirige automáticamente después de 2 segundos
             setTimeout(function () {
-                window.location.href = "{% url 'login' %}";
-            }, 1000);
-
-            return;
-        }
-
-        contador.textContent = formatTiempo(totalSegundos);
-
-        // Cambiar color cuando queden menos de 5 minutos
-        if (totalSegundos <= 30) {
-            contador.style.color = '#d69e2e';
+                window.location.href = "/login/";
+            }, 2000);
         }
 
     }, 1000);

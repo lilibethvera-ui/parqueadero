@@ -20,8 +20,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'parking',
     'axes',
+    # 'allauth',                     
+    # 'allauth.account',             
+    # 'allauth.socialaccount',     
+    # 'allauth.socialaccount.providers.google',
 ]
 
 # ============ MIDDLEWARE ============
@@ -33,7 +38,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #'allauth.account.middleware.AccountMiddleware',
     'axes.middleware.AxesMiddleware',
+    'parking.middleware.LoginRequeridoMiddleware',
 ]
 
 ROOT_URLCONF = 'parqueadero.urls'
@@ -74,7 +81,6 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    #{'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
@@ -124,3 +130,25 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = f'Parqueadero <{os.getenv("EMAIL_HOST_USER")}>'
+
+# ============ ALLAUTH ============
+# SITE_ID = 1
+
+# AUTHENTICATION_BACKENDS = [
+#     'axes.backends.AxesStandaloneBackend',
+#     'django.contrib.auth.backends.ModelBackend',
+#     'allauth.account.auth_backends.AuthenticationBackend',  # ← nuevo
+# ]
+
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'SCOPE': ['profile', 'email'],
+#         'AUTH_PARAMS': {'access_type': 'online'},
+#         'OAUTH_PKCE_ENABLED': True,
+#     }
+# }
+
+# SOCIALACCOUNT_AUTO_SIGNUP = True
+# SOCIALACCOUNT_LOGIN_ON_GET = True
+# LOGIN_REDIRECT_URL = '/seleccionar-sucursal/'
+# ACCOUNT_LOGOUT_REDIRECT_URL = '/login/'

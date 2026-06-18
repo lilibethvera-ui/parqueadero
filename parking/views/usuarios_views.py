@@ -45,6 +45,12 @@ def login_view(request):
         if user is not None and user.is_active:
             login(request, user)
 
+            # Recordarme — si NO está marcado, la sesión expira al cerrar el navegador
+            if not request.POST.get('recordarme'):
+                request.session.set_expiry(0)  # Expira al cerrar el navegador
+            else:
+                request.session.set_expiry(31536000)  # 1 año en segundos
+
             # Registrar acceso exitoso
             RegistroAcceso.objects.create(
                 usuario_texto=login_input,
@@ -53,6 +59,10 @@ def login_view(request):
                 user_agent=request.META.get('HTTP_USER_AGENT', '')
             )
 
+            # Redirigir a ?next= si existe, si no al flujo normal
+            next_url = request.POST.get('next') or request.GET.get('next')
+            if next_url and next_url.startswith('/'):
+                return redirect(next_url)
             return redirect('seleccionar_sucursal')
 
         elif user is not None and not user.is_active:

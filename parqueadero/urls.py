@@ -1,14 +1,11 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from parking import views as parking_views
 from django.contrib.auth import views as auth_views
 from parking.views import tarifas_views 
 from parking.views import clientes_views
 from parking.views import convenios_views
 from parking.views import usuarios_views
-
-
-
 
 
 urlpatterns = [

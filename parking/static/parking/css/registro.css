@@ -17,8 +17,6 @@ body {
     z-index: 1;
 }
 
-@media (min-width: 768px) {.login-container {justify-content: center; padding-right: 8%;}}
-
 /* TARJETA PRINCIPAL */
 .login-card {
     background: rgba(255, 255, 255, 0.70);
@@ -223,3 +221,135 @@ body {
 .req-ok   { color: #2f855a !important; }
 .req-fail { color: #c53030 !important; }
 
+
+
+/* ============ RESPONSIVO MÓVIL ============ */
+@media (min-width: 768px) {.login-container {justify-content: center; padding-right: 8%;}}
+
+@media (max-width: 576px) {
+    .login-container {
+        padding: 12px;
+        align-items: flex-start;
+        padding-top: 24px;
+    }
+
+    .login-card {
+        padding: 1.5rem 1.2rem;
+        border-radius: 12px;
+        max-width: 100% !important;
+    }
+
+    .login-card img {
+        max-width: 200px !important;
+    }
+
+    .form-floating > .form-control {
+        font-size: 16px; /* Evita zoom automático en iOS */
+    }
+
+    .btn-navy {
+        font-size: 15px !important;
+        padding: 12px !important;
+    }
+
+    .divider {
+        margin: 1rem 0;
+    }
+
+    /* Recordarme y olvidé contraseña en columna en móvil */
+    .d-flex.justify-content-between.flex-wrap {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .login-card {
+        padding: 1.2rem 1rem;
+    }
+}
+
+/* ============ RESPONSIVO MÓVIL - REGISTRO ============ */
+@media (max-width: 576px) {
+    .login-card .row > .col-md-6 {
+        margin-bottom: 0 !important;
+    }
+
+    /* Checklist de requisitos más legible en móvil */
+    .req-list li {
+        font-size: 0.82rem;
+        margin-bottom: 6px;
+    }
+
+    /* Barra de fortaleza más visible */
+    .strength-bar-wrap {
+        height: 7px;
+    }
+
+    /* Campos en columna completa en móvil */
+    #formRegistro .row {
+        --bs-gutter-x: 0.5rem;
+    }
+
+    /* Botón registrarme */
+    #btnSubmit {
+        font-size: 15px !important;
+        padding: 12px !important;
+    }
+
+    /* Google button */
+    .btn-google {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 380px) {
+    #formRegistro .form-floating label {
+        font-size: 13px;
+    }
+}
+
+/* ============ RESPONSIVO MÓVIL - RECUPERAR CONTRASEÑA ============ */
+@media (max-width: 576px) {
+    /* password_reset.html */
+    .login-card h5 {
+        font-size: 1.1rem;
+    }
+
+    .login-card p.text-muted {
+        font-size: 0.82rem;
+    }
+
+    /* Campos de nueva contraseña en password_reset_confirm.html */
+    .login-card .form-floating {
+        margin-bottom: 0.8rem;
+    }
+
+    /* Botones de acción */
+    .login-card .btn {
+        font-size: 15px !important;
+        padding: 11px !important;
+    }
+
+    /* Ícono de confirmación y bloqueo */
+    .login-card div[style*="font-size:3rem"] {
+        font-size: 2.5rem !important;
+    }
+
+    /* Enlace volver al login */
+    .login-card a.login-link {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .login-card {
+        padding: 1.2rem 1rem;
+    }
+
+    .login-card img {
+        max-width: 170px !important;
+    }
+}
